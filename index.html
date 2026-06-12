@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>POK TA POK - Juego de Pelota Maya | Fullscreen & Responsive</title>
+    <title>POK TA POK - Juego de Pelota Maya | Responsive Completo</title>
     <style>
         * {
             margin: 0;
@@ -65,8 +65,6 @@
             position: relative; 
             overflow: hidden; 
             border: 4px solid #d4a259;
-            width: 100%;
-            height: 100%;
         }
         canvas { 
             display: block; 
@@ -77,66 +75,10 @@
             background: #2e4a22;
         }
 
-        /* Modo horizontal: pantalla completa */
-        @media (orientation: landscape) {
-            body {
-                background: #0a1f0a;
-            }
-            .game-wrapper {
-                width: 100vw;
-                height: 100vh;
-            }
-            .game-container {
-                width: 100vw;
-                height: 100vh;
-                border-radius: 0;
-                border-width: 0;
-            }
-            canvas {
-                object-fit: cover;
-                width: 100%;
-                height: 100%;
-            }
-            .top-bar {
-                top: 15px;
-                left: 15px;
-                right: 15px;
-            }
-            .controls-panel, .lore-panel {
-                top: 65px;
-                font-size: 12px;
-                padding: 12px 22px;
-            }
-            .touch-controls {
-                bottom: 20px;
-            }
-            .touch-btn {
-                width: 65px;
-                height: 65px;
-                font-size: 34px;
-            }
-            .touch-kick {
-                font-size: 30px;
-            }
-        }
-
-        /* Modo vertical: responsive original */
-        @media (orientation: portrait) {
-            .game-container {
-                border-radius: 28px;
-                border-width: 4px;
-            }
-            .touch-controls {
-                bottom: 15px;
-            }
-            .touch-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 28px;
-            }
-            .touch-kick {
-                font-size: 24px;
-            }
+        /* Ajuste universal para que se vea completo en todos los dispositivos */
+        .game-wrapper, .game-container, canvas {
+            max-width: 100%;
+            max-height: 100%;
         }
 
         .top-bar { 
@@ -251,6 +193,7 @@
         .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
         .customize-panel span { color: #ffd966; margin-right: 4px; font-size: 10px; }
 
+        /* Controles táctiles más transparentes (opacidad 30%) */
         .touch-controls { 
             position: fixed; 
             bottom: 15px; 
@@ -271,9 +214,9 @@
             width: 55px; 
             height: 55px; 
             border-radius: 50%; 
-            background: rgba(0,0,0,0.8); 
+            background: rgba(0,0,0,0.3);  /* Opacidad 30% */
             backdrop-filter: blur(8px); 
-            border: 2px solid #e6b422; 
+            border: 2px solid rgba(230, 180, 34, 0.6); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
@@ -286,13 +229,13 @@
             font-family: monospace; 
             box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
         }
-        .touch-kick { background: rgba(180,70,20,0.9); border-color: #ff8844; color: #ffffaa; font-size: 24px; }
-        .touch-btn:active { transform: scale(0.92); background: #b97f2e; }
+        .touch-kick { background: rgba(180,70,20,0.3); border-color: #ff8844; color: #ffffaa; font-size: 24px; }
+        .touch-btn:active { transform: scale(0.92); background: rgba(0,0,0,0.5); }
         
         @media (max-width: 768px) {
             .touch-controls { display: flex; bottom: 10px; padding: 5px 12px; }
-            .touch-btn { width: 48px; height: 48px; font-size: 24px; }
-            .touch-kick { font-size: 20px; }
+            .touch-btn { width: 48px; height: 48px; font-size: 24px; background: rgba(0,0,0,0.3); }
+            .touch-kick { font-size: 20px; background: rgba(180,70,20,0.3); }
             .customize-panel { bottom: 65px; left: 10px; flex-wrap: wrap; max-width: 180px; }
             .info-panel { font-size: 9px; padding: 3px 8px; }
             .controls-panel, .lore-panel { top: 55px; font-size: 9px; width: 90%; }
@@ -303,15 +246,15 @@
             .victory-btn { font-size: 11px; padding: 6px 14px; }
         }
         @media (max-width: 480px) {
-            .touch-btn { width: 44px; height: 44px; font-size: 22px; }
-            .touch-kick { font-size: 18px; }
+            .touch-btn { width: 44px; height: 44px; font-size: 22px; background: rgba(0,0,0,0.3); }
+            .touch-kick { font-size: 18px; background: rgba(180,70,20,0.3); }
             .top-btn { padding: 2px 8px; font-size: 8px; }
             .info-panel { font-size: 8px; padding: 2px 6px; }
         }
-        @media (min-width: 1024px) and (orientation: landscape) { 
+        @media (min-width: 1024px) { 
             .touch-controls { max-width: 450px; bottom: 20px; } 
-            .touch-btn { width: 65px; height: 65px; font-size: 34px; }
-            .touch-kick { font-size: 30px; }
+            .touch-btn { width: 65px; height: 65px; font-size: 34px; background: rgba(0,0,0,0.3); }
+            .touch-kick { font-size: 30px; background: rgba(180,70,20,0.3); }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -371,43 +314,52 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Configuración responsive del canvas
+        // Configuración responsive mejorada para que se vea completo en todos los dispositivos
         function resizeCanvas() {
             const container = canvas.parentElement;
             const ww = window.innerWidth;
             const wh = window.innerHeight;
-            const isLandscape = ww > wh;
             
             // Mantener el canvas con un tamaño fijo en píxeles para la lógica del juego
             canvas.width = 1200;
             canvas.height = 650;
             
-            if (isLandscape) {
-                // Modo horizontal: pantalla completa
-                canvas.style.width = '100vw';
-                canvas.style.height = '100vh';
-                container.style.width = '100vw';
-                container.style.height = '100vh';
-            } else {
-                // Modo vertical: ajuste proporcional
-                const aspect = 1200 / 650;
-                let displayWidth = ww * 0.92;
-                let displayHeight = displayWidth / aspect;
-                if (displayHeight > wh * 0.85) {
-                    displayHeight = wh * 0.85;
-                    displayWidth = displayHeight * aspect;
-                }
-                displayWidth = Math.max(displayWidth, 320);
-                displayHeight = Math.max(displayHeight, 180);
-                canvas.style.width = `${displayWidth}px`;
-                canvas.style.height = `${displayHeight}px`;
-                container.style.width = `${displayWidth}px`;
-                container.style.height = `${displayHeight}px`;
+            // Calcular el tamaño óptimo para que se vea completo
+            const gameAspect = 1200 / 650;
+            let displayWidth, displayHeight;
+            
+            // Siempre usar el método que mantiene la relación de aspecto completa
+            // Priorizar que se vea todo el juego sin cortes
+            displayWidth = ww;
+            displayHeight = displayWidth / gameAspect;
+            
+            if (displayHeight > wh) {
+                displayHeight = wh;
+                displayWidth = displayHeight * gameAspect;
             }
+            
+            // Aplicar márgenes mínimos para asegurar que no toque los bordes en vertical
+            if (displayWidth > ww * 0.95) {
+                displayWidth = ww * 0.95;
+                displayHeight = displayWidth / gameAspect;
+            }
+            
+            if (displayHeight > wh * 0.9) {
+                displayHeight = wh * 0.9;
+                displayWidth = displayHeight * gameAspect;
+            }
+            
+            displayWidth = Math.max(displayWidth, 320);
+            displayHeight = Math.max(displayHeight, 180);
+            
+            canvas.style.width = `${displayWidth}px`;
+            canvas.style.height = `${displayHeight}px`;
+            container.style.width = `${displayWidth}px`;
+            container.style.height = `${displayHeight}px`;
         }
         
         window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
         resizeCanvas();
         
         const Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Body = Matter.Body, Events = Matter.Events;
