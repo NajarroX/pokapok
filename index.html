@@ -552,7 +552,7 @@
         }
         
         // ==================== SPRITES ====================
-        const playerSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-03.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
+        const playerSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-01.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const opponentSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-02.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const playerImg = new Image(); let playerImgLoaded = false; playerImg.onload = () => playerImgLoaded = true; playerImg.src = playerSpriteConfig.spriteSheetURL;
         const opponentImg = new Image(); let opponentImgLoaded = false; opponentImg.onload = () => opponentImgLoaded = true; opponentImg.src = opponentSpriteConfig.spriteSheetURL;
