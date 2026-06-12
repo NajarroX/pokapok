@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>POK TA POK - Juego de Pelota Maya | Responsive Completo</title>
+    <title>POK TA POK - Juego de Pelota Maya | FullBrowser Completo</title>
     <style>
         * {
             margin: 0;
@@ -34,8 +34,8 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: transparent;
-            backdrop-filter: blur(12px);
+            background: rgba(0,0,0,0.85);
+            backdrop-filter: blur(15px);
             z-index: 1000;
             display: flex;
             justify-content: center;
@@ -44,27 +44,31 @@
             transition: opacity 0.5s ease;
             cursor: pointer;
         }
-        .splash-logo { max-width: 80%; max-height: 60%; object-fit: contain; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 15px #e6b422); }
-        .splash-text { margin-top: 30px; color: #ffd966; font-family: 'Press Start 2P', monospace; font-size: 14px; text-align: center; letter-spacing: 2px; text-shadow: 0 0 10px #e6b422; background: rgba(0,0,0,0.5); padding: 12px 24px; border-radius: 50px; backdrop-filter: blur(5px); }
+        .splash-logo { max-width: 70%; max-height: 50%; object-fit: contain; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 20px #e6b422); }
+        .splash-text { margin-top: 30px; color: #ffd966; font-family: 'Press Start 2P', monospace; font-size: 16px; text-align: center; letter-spacing: 2px; text-shadow: 0 0 10px #e6b422; background: rgba(0,0,0,0.5); padding: 15px 30px; border-radius: 50px; backdrop-filter: blur(5px); }
         @keyframes pulse { 0% { transform: scale(0.98); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.8; } }
 
+        /* FullBrowser sin recortes */
         .game-wrapper { 
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            width: 100%; 
-            height: 100%; 
+            width: 100vw; 
+            height: 100vh; 
             position: relative; 
+            background: #1a2a1a;
         }
         .game-container { 
             background: #2a2418; 
-            border-radius: 28px; 
+            border-radius: 0;
             box-shadow: 0 20px 35px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,215,0,0.3); 
             display: flex; 
             position: relative; 
             overflow: hidden; 
-            border: 4px solid #d4a259;
+            border: none;
+            width: 100%;
+            height: 100%;
         }
         canvas { 
             display: block; 
@@ -72,56 +76,50 @@
             width: 100%; 
             height: 100%; 
             object-fit: contain;
-            background: #2e4a22;
-        }
-
-        /* Ajuste universal para que se vea completo en todos los dispositivos */
-        .game-wrapper, .game-container, canvas {
-            max-width: 100%;
-            max-height: 100%;
+            background: #1f3a1a;
         }
 
         .top-bar { 
             position: absolute; 
-            top: 12px; 
-            left: 12px; 
-            right: 12px; 
+            top: 15px; 
+            left: 15px; 
+            right: 15px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            gap: 8px; 
+            gap: 10px; 
             z-index: 15; 
             pointer-events: none; 
         }
-        .logo-area { background: transparent; backdrop-filter: none; border-radius: 0; padding: 0; border-left: none; display: flex; align-items: center; gap: 8px; pointer-events: none; }
-        .logo-img { height: 40px; width: auto; max-width: 100px; object-fit: contain; }
-        .logo-text { color: #ffd966; font-weight: bold; font-size: 12px; font-family: 'Press Start 2P', monospace; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
-        .info-panel { background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); padding: 4px 12px; border-radius: 40px; color: #ffd966; font-weight: bold; font-size: 11px; font-family: monospace; border-left: 3px solid #e6b422; pointer-events: none; white-space: nowrap; }
-        .top-actions { display: flex; gap: 8px; pointer-events: auto; }
-        .top-btn { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid #d4a259; color: #ffeaac; font-weight: bold; padding: 4px 12px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', 'Courier New', monospace; font-size: 11px; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .logo-area { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 50px; padding: 5px 15px; border-left: 3px solid #e6b422; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+        .logo-img { height: 45px; width: auto; max-width: 120px; object-fit: contain; }
+        .logo-text { color: #ffd966; font-weight: bold; font-size: 14px; font-family: 'Press Start 2P', monospace; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
+        .info-panel { background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); padding: 6px 16px; border-radius: 40px; color: #ffd966; font-weight: bold; font-size: 13px; font-family: monospace; border-left: 3px solid #e6b422; pointer-events: none; white-space: nowrap; }
+        .top-actions { display: flex; gap: 12px; pointer-events: auto; }
+        .top-btn { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid #d4a259; color: #ffeaac; font-weight: bold; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', 'Courier New', monospace; font-size: 12px; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .top-btn:hover { background: #7e5a2a; transform: scale(1.02); border-color: #ffd966; color: white; }
 
         .controls-panel, .lore-panel { 
             position: absolute; 
-            top: 55px; 
+            top: 70px; 
             left: 50%; 
             transform: translateX(-50%); 
             background: rgba(0,0,0,0.92); 
             backdrop-filter: blur(12px); 
-            border-radius: 20px; 
-            padding: 10px 18px; 
+            border-radius: 24px; 
+            padding: 12px 24px; 
             color: #ffdd99; 
-            font-size: 11px; 
+            font-size: 12px; 
             font-family: 'Segoe UI', monospace; 
             text-align: center; 
             pointer-events: none; 
             z-index: 20; 
             border: 1px solid #dba53f; 
-            line-height: 1.5; 
+            line-height: 1.6; 
             transition: all 0.3s ease; 
             font-weight: 500; 
             letter-spacing: 0.5px; 
-            max-width: 85%;
+            max-width: 80%;
         }
         .controls-panel.hidden, .lore-panel.hidden { display: none; }
         .controls-panel span, .lore-panel span { color: #ffaa55; font-weight: bold; }
@@ -139,122 +137,122 @@
             justify-content: center;
             align-items: center;
             flex-direction: column;
-            gap: 15px;
+            gap: 20px;
         }
         .victory-message {
             background: linear-gradient(145deg, #ffdd88, #d98c2b);
             color: #1e2a0c;
-            padding: 12px 24px;
+            padding: 15px 30px;
             border-radius: 60px;
             font-weight: bold;
-            font-size: 1.2rem;
+            font-size: 1.3rem;
             font-family: 'Press Start 2P', monospace;
             text-align: center;
             box-shadow: 0 0 55px gold;
             border: 3px solid white;
         }
-        .victory-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .victory-buttons { display: flex; gap: 20px; flex-wrap: wrap; justify-content: center; }
         .victory-btn {
             background: #5a3e1b;
             border: 2px solid #ffd966;
             color: #ffeaac;
             font-weight: bold;
-            padding: 8px 18px;
+            padding: 10px 22px;
             border-radius: 50px;
             cursor: pointer;
             font-family: 'Segoe UI', monospace;
-            font-size: 14px;
+            font-size: 16px;
             transition: 0.2s;
             box-shadow: 0 4px 15px rgba(0,0,0,0.5);
         }
         .victory-btn:hover { background: #7e5a2a; transform: scale(1.05); }
 
-        .reset-btn { position: absolute; bottom: 12px; right: 12px; background: #5a3e1b; border: none; color: #ffeaac; font-weight: bold; padding: 5px 14px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', monospace; z-index: 15; transition: 0.2s; font-size: 11px; box-shadow: 0 2px 8px black; backdrop-filter: blur(4px); }
+        .reset-btn { position: absolute; bottom: 15px; right: 15px; background: #5a3e1b; border: none; color: #ffeaac; font-weight: bold; padding: 6px 18px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', monospace; z-index: 15; transition: 0.2s; font-size: 12px; box-shadow: 0 2px 8px black; backdrop-filter: blur(4px); }
         .reset-btn:hover { background: #7e5a2a; transform: scale(1.02); }
 
         .customize-panel { 
             position: absolute; 
-            bottom: 12px; 
-            left: 12px; 
+            bottom: 15px; 
+            left: 15px; 
             background: rgba(0,0,0,0.85); 
             backdrop-filter: blur(10px); 
             border-radius: 30px; 
-            padding: 5px 10px; 
+            padding: 6px 12px; 
             display: flex; 
-            gap: 6px; 
+            gap: 8px; 
             z-index: 20; 
-            font-size: 10px; 
+            font-size: 11px; 
             font-family: 'Segoe UI', monospace; 
             border: 1px solid #d4a259; 
             transition: all 0.3s ease; 
         }
         .customize-panel.hidden { display: none; }
-        .customize-panel button { position: relative; bottom: auto; right: auto; background: #3a2a12; padding: 4px 10px; font-size: 9px; margin: 0; border-radius: 30px; font-family: 'Segoe UI', monospace; font-weight: bold; transition: 0.1s; }
+        .customize-panel button { position: relative; bottom: auto; right: auto; background: #3a2a12; padding: 5px 12px; font-size: 10px; margin: 0; border-radius: 30px; font-family: 'Segoe UI', monospace; font-weight: bold; transition: 0.1s; }
         .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
-        .customize-panel span { color: #ffd966; margin-right: 4px; font-size: 10px; }
+        .customize-panel span { color: #ffd966; margin-right: 5px; font-size: 11px; }
 
-        /* Controles táctiles más transparentes (opacidad 30%) */
+        /* Controles táctiles más transparentes */
         .touch-controls { 
             position: fixed; 
-            bottom: 15px; 
+            bottom: 20px; 
             left: 0; 
             right: 0; 
             display: none; 
             justify-content: space-between; 
             align-items: center; 
-            padding: 10px 20px; 
+            padding: 12px 25px; 
             z-index: 100; 
             pointer-events: none; 
-            max-width: 550px; 
+            max-width: 500px; 
             margin: 0 auto; 
         }
-        .touch-direction { display: flex; gap: 15px; pointer-events: auto; }
-        .touch-action-group { display: flex; gap: 12px; pointer-events: auto; }
+        .touch-direction { display: flex; gap: 20px; pointer-events: auto; }
+        .touch-action-group { display: flex; gap: 15px; pointer-events: auto; }
         .touch-btn { 
-            width: 55px; 
-            height: 55px; 
+            width: 65px; 
+            height: 65px; 
             border-radius: 50%; 
-            background: rgba(0,0,0,0.3);  /* Opacidad 30% */
+            background: rgba(0,0,0,0.25); 
             backdrop-filter: blur(8px); 
-            border: 2px solid rgba(230, 180, 34, 0.6); 
+            border: 2px solid rgba(230, 180, 34, 0.5); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 28px; 
+            font-size: 34px; 
             font-weight: bold; 
             color: #ffdd99; 
             cursor: pointer; 
             transition: 0.05s linear; 
             touch-action: manipulation; 
             font-family: monospace; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
         }
-        .touch-kick { background: rgba(180,70,20,0.3); border-color: #ff8844; color: #ffffaa; font-size: 24px; }
+        .touch-kick { background: rgba(180,70,20,0.25); border-color: rgba(255,136,68,0.5); color: #ffffaa; font-size: 30px; }
         .touch-btn:active { transform: scale(0.92); background: rgba(0,0,0,0.5); }
         
         @media (max-width: 768px) {
-            .touch-controls { display: flex; bottom: 10px; padding: 5px 12px; }
-            .touch-btn { width: 48px; height: 48px; font-size: 24px; background: rgba(0,0,0,0.3); }
-            .touch-kick { font-size: 20px; background: rgba(180,70,20,0.3); }
-            .customize-panel { bottom: 65px; left: 10px; flex-wrap: wrap; max-width: 180px; }
-            .info-panel { font-size: 9px; padding: 3px 8px; }
-            .controls-panel, .lore-panel { top: 55px; font-size: 9px; width: 90%; }
-            .logo-img { height: 30px; }
-            .logo-text { font-size: 8px; }
-            .top-btn { padding: 3px 10px; font-size: 9px; }
-            .victory-message { font-size: 0.9rem; padding: 8px 16px; }
-            .victory-btn { font-size: 11px; padding: 6px 14px; }
+            .touch-controls { display: flex; bottom: 12px; padding: 8px 18px; }
+            .touch-btn { width: 52px; height: 52px; font-size: 28px; }
+            .touch-kick { font-size: 24px; }
+            .customize-panel { bottom: 70px; left: 12px; flex-wrap: wrap; max-width: 200px; }
+            .info-panel { font-size: 11px; padding: 4px 12px; }
+            .controls-panel, .lore-panel { top: 70px; font-size: 10px; width: 90%; }
+            .logo-img { height: 35px; }
+            .logo-text { font-size: 10px; }
+            .top-btn { padding: 4px 12px; font-size: 10px; }
+            .victory-message { font-size: 1rem; padding: 10px 20px; }
+            .victory-btn { font-size: 12px; padding: 7px 16px; }
         }
         @media (max-width: 480px) {
-            .touch-btn { width: 44px; height: 44px; font-size: 22px; background: rgba(0,0,0,0.3); }
-            .touch-kick { font-size: 18px; background: rgba(180,70,20,0.3); }
-            .top-btn { padding: 2px 8px; font-size: 8px; }
-            .info-panel { font-size: 8px; padding: 2px 6px; }
+            .touch-btn { width: 48px; height: 48px; font-size: 24px; }
+            .touch-kick { font-size: 20px; }
+            .top-btn { padding: 3px 10px; font-size: 9px; }
+            .info-panel { font-size: 9px; padding: 3px 8px; }
         }
         @media (min-width: 1024px) { 
-            .touch-controls { max-width: 450px; bottom: 20px; } 
-            .touch-btn { width: 65px; height: 65px; font-size: 34px; background: rgba(0,0,0,0.3); }
-            .touch-kick { font-size: 30px; background: rgba(180,70,20,0.3); }
+            .touch-controls { max-width: 450px; bottom: 25px; } 
+            .touch-btn { width: 65px; height: 65px; font-size: 34px; }
+            .touch-kick { font-size: 30px; }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
@@ -314,43 +312,32 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // Configuración responsive mejorada para que se vea completo en todos los dispositivos
+        // FullBrowser: el canvas ocupa toda la pantalla manteniendo la relación de aspecto
         function resizeCanvas() {
             const container = canvas.parentElement;
             const ww = window.innerWidth;
             const wh = window.innerHeight;
+            const gameAspect = 1200 / 650;
             
             // Mantener el canvas con un tamaño fijo en píxeles para la lógica del juego
             canvas.width = 1200;
             canvas.height = 650;
             
-            // Calcular el tamaño óptimo para que se vea completo
-            const gameAspect = 1200 / 650;
-            let displayWidth, displayHeight;
+            // Calcular el tamaño óptimo para que ocupe toda la pantalla sin recortar
+            let displayWidth = ww;
+            let displayHeight = wh;
             
-            // Siempre usar el método que mantiene la relación de aspecto completa
-            // Priorizar que se vea todo el juego sin cortes
-            displayWidth = ww;
-            displayHeight = displayWidth / gameAspect;
-            
-            if (displayHeight > wh) {
+            // Ajustar para mantener la relación de aspecto
+            const containerAspect = ww / wh;
+            if (containerAspect > gameAspect) {
+                // Pantalla más ancha que el juego
                 displayHeight = wh;
-                displayWidth = displayHeight * gameAspect;
+                displayWidth = wh * gameAspect;
+            } else {
+                // Pantalla más alta que el juego
+                displayWidth = ww;
+                displayHeight = ww / gameAspect;
             }
-            
-            // Aplicar márgenes mínimos para asegurar que no toque los bordes en vertical
-            if (displayWidth > ww * 0.95) {
-                displayWidth = ww * 0.95;
-                displayHeight = displayWidth / gameAspect;
-            }
-            
-            if (displayHeight > wh * 0.9) {
-                displayHeight = wh * 0.9;
-                displayWidth = displayHeight * gameAspect;
-            }
-            
-            displayWidth = Math.max(displayWidth, 320);
-            displayHeight = Math.max(displayHeight, 180);
             
             canvas.style.width = `${displayWidth}px`;
             canvas.style.height = `${displayHeight}px`;
@@ -359,7 +346,7 @@
         }
         
         window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 100));
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
         resizeCanvas();
         
         const Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Body = Matter.Body, Events = Matter.Events;
@@ -463,9 +450,9 @@
             const div = document.createElement('div');
             div.innerText = msg;
             div.style.position = 'absolute'; div.style.bottom = '35%'; div.style.left = '50%'; div.style.transform = 'translateX(-50%)';
-            div.style.backgroundColor = 'rgba(0,0,0,0.85)'; div.style.color = color; div.style.padding = '5px 16px'; div.style.borderRadius = '40px';
+            div.style.backgroundColor = 'rgba(0,0,0,0.85)'; div.style.color = color; div.style.padding = '6px 18px'; div.style.borderRadius = '40px';
             div.style.fontWeight = 'bold'; div.style.fontFamily = 'monospace'; div.style.zIndex = '30'; div.style.pointerEvents = 'none';
-            div.style.backdropFilter = 'blur(6px)'; div.style.border = `1px solid ${color}`; div.style.fontSize = '11px'; div.style.whiteSpace = 'nowrap';
+            div.style.backdropFilter = 'blur(6px)'; div.style.border = `1px solid ${color}`; div.style.fontSize = '12px'; div.style.whiteSpace = 'nowrap';
             document.querySelector('.game-container').appendChild(div);
             setTimeout(() => div.remove(), 1200);
         }
@@ -596,7 +583,7 @@
         class AnimatedEntity {
             constructor(bodyRef, animator, label) { this.body = bodyRef; this.animator = animator; this.facingRight = true; this.label = label; }
             update(deltaTime) { const vx = this.body.velocity.x; const isGrounded = this.body.position.y >= GROUND_Y - 42; if (!isGrounded) this.animator.setAnimation('jump'); else if (Math.abs(vx) > 1.2) this.animator.setAnimation('run'); else this.animator.setAnimation('idle'); this.animator.update(deltaTime); if (vx !== 0) this.facingRight = vx > 0; }
-            draw(ctx, cameraX) { const drawX = this.body.position.x - cameraX; const drawY = this.body.position.y; this.animator.draw(ctx, drawX, drawY, !this.facingRight); ctx.fillStyle = "#f5d98c"; ctx.font = "bold 9px monospace"; ctx.fillText(this.label, drawX-18, drawY-38); }
+            draw(ctx, cameraX) { const drawX = this.body.position.x - cameraX; const drawY = this.body.position.y; this.animator.draw(ctx, drawX, drawY, !this.facingRight); ctx.fillStyle = "#f5d98c"; ctx.font = "bold 10px monospace"; ctx.fillText(this.label, drawX-18, drawY-38); }
         }
         
         function drawMayaCourt(cameraX) {
@@ -613,7 +600,7 @@
             if (customBallImage) ctx.drawImage(customBallImage, ball.position.x - cameraX - 16, ball.position.y - 16, 32, 32);
             else { ctx.beginPath(); ctx.arc(ball.position.x - cameraX, ball.position.y, 15, 0, Math.PI*2); ctx.fillStyle = ballColor; ctx.fill(); ctx.fillStyle = "#ffcc88"; ctx.beginPath(); ctx.arc(ball.position.x - cameraX, ball.position.y, 9, 0, Math.PI*2); ctx.fill(); }
             ctx.shadowBlur = 0;
-            if (lastTouchBy) { ctx.font = "bold 7px monospace"; ctx.fillStyle = lastTouchBy === "player" ? "#88ff88" : "#ff8888"; ctx.fillText(lastTouchBy === "player" ? "⚡ HUN" : "⚡ XIB", ball.position.x - cameraX - 12, ball.position.y - 18); }
+            if (lastTouchBy) { ctx.font = "bold 8px monospace"; ctx.fillStyle = lastTouchBy === "player" ? "#88ff88" : "#ff8888"; ctx.fillText(lastTouchBy === "player" ? "⚡ HUN" : "⚡ XIB", ball.position.x - cameraX - 12, ball.position.y - 18); }
         }
         
         let lastTimestamp = 0, cameraX = 0, shakeX = 0, shakeY = 0, playerAnimator, opponentAnimator;
@@ -639,7 +626,7 @@
             drawMayaCourt(cameraX);
             if (playerAnimator) playerAnimator.draw(ctx, cameraX);
             if (opponentAnimator) opponentAnimator.draw(ctx, cameraX);
-            ctx.font = "7px monospace"; ctx.fillStyle = "#aaa"; ctx.fillText(`Último toque: ${lastTouchBy || "nadie"}`, cameraX + 20, 80);
+            ctx.font = "8px monospace"; ctx.fillStyle = "#aaa"; ctx.fillText(`Último toque: ${lastTouchBy || "nadie"}`, cameraX + 20, 80);
             ctx.restore();
             requestAnimationFrame(gameLoop);
         }
