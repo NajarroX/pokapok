@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>POK TA POK - Juego de Pelota Maya | Totalmente Responsive</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background: #0a1f0a;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Courier New', 'Press Start 2P', monospace;
+            overflow: hidden;
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            background-image: radial-gradient(circle at 30% 20%, #1e3a1e, #051005);
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            backdrop-filter: blur(12px);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            transition: opacity 0.5s ease;
+            cursor: pointer;
+        }
+        .splash-logo { max-width: 80%; max-height: 60%; object-fit: contain; animation: pulse 1.5s infinite; filter: drop-shadow(0 0 15px #e6b422); }
+        .splash-text { margin-top: 30px; color: #ffd966; font-family: 'Press Start 2P', monospace; font-size: 14px; text-align: center; letter-spacing: 2px; text-shadow: 0 0 10px #e6b422; background: rgba(0,0,0,0.5); padding: 12px 24px; border-radius: 50px; backdrop-filter: blur(5px); }
+        @keyframes pulse { 0% { transform: scale(0.98); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.8; } }
+
+        .game-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            justify-content: center; 
+            width: 100%; 
+            height: 100%; 
+            position: relative; 
+        }
+        .game-container { 
+            background: #2a2418; 
+            border-radius: 28px; 
+            box-shadow: 0 20px 35px rgba(0,0,0,0.6), inset 0 1px 2px rgba(255,215,0,0.3); 
+            display: flex; 
+            position: relative; 
+            overflow: hidden; 
+            border: 4px solid #d4a259;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            max-height: 100%;
+        }
+        canvas { 
+            display: block; 
+            cursor: pointer; 
+            width: 100%; 
+            height: 100%; 
+            object-fit: contain;
+            background: #2e4a22;
+        }
+
+        .top-bar { 
+            position: absolute; 
+            top: 12px; 
+            left: 12px; 
+            right: 12px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            gap: 8px; 
+            z-index: 15; 
+            pointer-events: none; 
+        }
+        .logo-area { background: transparent; backdrop-filter: none; border-radius: 0; padding: 0; border-left: none; display: flex; align-items: center; gap: 8px; pointer-events: none; }
+        .logo-img { height: 40px; width: auto; max-width: 100px; object-fit: contain; }
+        .logo-text { color: #ffd966; font-weight: bold; font-size: 12px; font-family: 'Press Start 2P', monospace; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
+        .info-panel { background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); padding: 4px 12px; border-radius: 40px; color: #ffd966; font-weight: bold; font-size: 11px; font-family: monospace; border-left: 3px solid #e6b422; pointer-events: none; white-space: nowrap; }
+        .top-actions { display: flex; gap: 8px; pointer-events: auto; }
+        .top-btn { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid #d4a259; color: #ffeaac; font-weight: bold; padding: 4px 12px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', 'Courier New', monospace; font-size: 11px; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
+        .top-btn:hover { background: #7e5a2a; transform: scale(1.02); border-color: #ffd966; color: white; }
+
+        .controls-panel, .lore-panel { 
+            position: absolute; 
+            top: 55px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: rgba(0,0,0,0.92); 
+            backdrop-filter: blur(12px); 
+            border-radius: 20px; 
+            padding: 10px 18px; 
+            color: #ffdd99; 
+            font-size: 11px; 
+            font-family: 'Segoe UI', monospace; 
+            text-align: center; 
+            pointer-events: none; 
+            z-index: 20; 
+            border: 1px solid #dba53f; 
+            line-height: 1.5; 
+            transition: all 0.3s ease; 
+            font-weight: 500; 
+            letter-spacing: 0.5px; 
+            max-width: 85%;
+        }
+        .controls-panel.hidden, .lore-panel.hidden { display: none; }
+        .controls-panel span, .lore-panel span { color: #ffaa55; font-weight: bold; }
+
+        .victory-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .victory-message {
+            background: linear-gradient(145deg, #ffdd88, #d98c2b);
+            color: #1e2a0c;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: bold;
+            font-size: 1.2rem;
+            font-family: 'Press Start 2P', monospace;
+            text-align: center;
+            box-shadow: 0 0 55px gold;
+            border: 3px solid white;
+        }
+        .victory-buttons { display: flex; gap: 15px; flex-wrap: wrap; justify-content: center; }
+        .victory-btn {
+            background: #5a3e1b;
+            border: 2px solid #ffd966;
+            color: #ffeaac;
+            font-weight: bold;
+            padding: 8px 18px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Segoe UI', monospace;
+            font-size: 14px;
+            transition: 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+        }
+        .victory-btn:hover { background: #7e5a2a; transform: scale(1.05); }
+
+        .reset-btn { position: absolute; bottom: 12px; right: 12px; background: #5a3e1b; border: none; color: #ffeaac; font-weight: bold; padding: 5px 14px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', monospace; z-index: 15; transition: 0.2s; font-size: 11px; box-shadow: 0 2px 8px black; backdrop-filter: blur(4px); }
+        .reset-btn:hover { background: #7e5a2a; transform: scale(1.02); }
+
+        .customize-panel { 
+            position: absolute; 
+            bottom: 12px; 
+            left: 12px; 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(10px); 
+            border-radius: 30px; 
+            padding: 5px 10px; 
+            display: flex; 
+            gap: 6px; 
+            z-index: 20; 
+            font-size: 10px; 
+            font-family: 'Segoe UI', monospace; 
+            border: 1px solid #d4a259; 
+            transition: all 0.3s ease; 
+        }
+        .customize-panel.hidden { display: none; }
+        .customize-panel button { position: relative; bottom: auto; right: auto; background: #3a2a12; padding: 4px 10px; font-size: 9px; margin: 0; border-radius: 30px; font-family: 'Segoe UI', monospace; font-weight: bold; transition: 0.1s; }
+        .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
+        .customize-panel span { color: #ffd966; margin-right: 4px; font-size: 10px; }
+
+        .touch-controls { 
+            position: fixed; 
+            bottom: 15px; 
+            left: 0; 
+            right: 0; 
+            display: none; 
+            justify-content: space-between; 
+            align-items: center; 
+            padding: 10px 20px; 
+            z-index: 100; 
+            pointer-events: none; 
+            max-width: 550px; 
+            margin: 0 auto; 
+        }
+        .touch-direction { display: flex; gap: 15px; pointer-events: auto; }
+        .touch-action-group { display: flex; gap: 12px; pointer-events: auto; }
+        .touch-btn { 
+            width: 55px; 
+            height: 55px; 
+            border-radius: 50%; 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(8px); 
+            border: 2px solid #e6b422; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 28px; 
+            font-weight: bold; 
+            color: #ffdd99; 
+            cursor: pointer; 
+            transition: 0.05s linear; 
+            touch-action: manipulation; 
+            font-family: monospace; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.4); 
+        }
+        .touch-kick { background: rgba(180,70,20,0.9); border-color: #ff8844; color: #ffffaa; font-size: 24px; }
+        .touch-btn:active { transform: scale(0.92); background: #b97f2e; }
+        
+        @media (max-width: 768px) {
+            .touch-controls { display: flex; bottom: 10px; padding: 5px 12px; }
+            .touch-btn { width: 48px; height: 48px; font-size: 24px; }
+            .touch-kick { font-size: 20px; }
+            .customize-panel { bottom: 65px; left: 10px; flex-wrap: wrap; max-width: 180px; }
+            .info-panel { font-size: 9px; padding: 3px 8px; }
+            .controls-panel, .lore-panel { top: 55px; font-size: 9px; width: 90%; }
+            .logo-img { height: 30px; }
+            .logo-text { font-size: 8px; }
+            .top-btn { padding: 3px 10px; font-size: 9px; }
+            .victory-message { font-size: 0.9rem; padding: 8px 16px; }
+            .victory-btn { font-size: 11px; padding: 6px 14px; }
+        }
+        @media (max-width: 480px) {
+            .touch-btn { width: 44px; height: 44px; font-size: 22px; }
+            .touch-kick { font-size: 18px; }
+            .top-btn { padding: 2px 8px; font-size: 8px; }
+            .info-panel { font-size: 8px; padding: 2px 6px; }
+        }
+        @media (min-width: 1024px) { 
+            .touch-controls { max-width: 450px; bottom: 20px; } 
+            .touch-btn { width: 65px; height: 65px; font-size: 34px; }
+            .touch-kick { font-size: 30px; }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
+</head>
+<body>
+<div class="game-wrapper" id="gameWrapper">
+    <div class="game-container">
+        <canvas id="gameCanvas"></canvas>
+        <div class="top-bar">
+            <div class="logo-area"><img id="gameLogo" class="logo-img" alt="Logo" style="display: none;"><span class="logo-text" id="gameLogoText">POK TA POK</span></div>
+            <div class="info-panel" id="infoPanel">🏆 POK TA POK · 0 - 0</div>
+            <div class="top-actions">
+                <button class="top-btn" id="controlsBtn">🎮 CONTROLES</button>
+                <button class="top-btn" id="infoBtn">📜 INFO</button>
+                <button class="top-btn" id="toggleCustomizeBtn">🎨 PERSONALIZAR</button>
+            </div>
+        </div>
+        <div class="controls-panel hidden" id="controlsPanel">🎮 <span>TECLADO</span>: ← → mover | ⬆ saltar | <span>K</span> patear<br>🕹️ <span>GAMEPAD</span>: stick izquierdo mover | Botón A saltar | Botón X patear<br>📱 <span>TÁCTIL</span>: botones en pantalla (◀ ▶ ▲ ⚡)</div>
+        <div class="lore-panel hidden" id="lorePanel">📖 *POPOL VUH*: Los Héroes Gemelos Hunahpú e Ixbalanqué jugaron a la pelota contra los Señores de Xibalbá.<br>⚡ El juego decidía el destino de los dioses. ¡Haz pasar la pelota de hule por el aro de piedra!<br>🏆 Primero en anotar 5 gana.</div>
+        <button class="reset-btn" id="resetBtn">🔄 REINICIAR</button>
+    </div>
+    <div class="customize-panel hidden" id="customizePanel">
+        <span>🎨</span>
+        <button id="loadDefaultBtn">📁 Default</button>
+        <input type="file" id="bgInput" accept="image/*" style="display:none"><button id="bgBtn">🏞️ Fondo</button>
+        <input type="file" id="ballInput" accept="image/*" style="display:none"><button id="ballBtn">⚽ Pelota</button>
+        <input type="file" id="groundInput" accept="image/*" style="display:none"><button id="groundBtn">🌱 Suelo</button>
+        <input type="file" id="ringInput" accept="image/*" style="display:none"><button id="ringBtn">🔄 Aro</button>
+    </div>
+    <div class="touch-controls" id="touchControls">
+        <div class="touch-direction"><div class="touch-btn touch-left" id="touchLeft">◀</div><div class="touch-btn touch-right" id="touchRight">▶</div></div>
+        <div class="touch-action-group"><div class="touch-btn touch-jump" id="touchJump">▲</div><div class="touch-btn touch-kick" id="touchKick">⚡</div></div>
+    </div>
+</div>
+
+<div class="splash-screen" id="splashScreen">
+    <img class="splash-logo" id="splashLogo" alt="Logo Pok Ta Pok">
+    <div class="splash-text" id="splashText">⚡ POK TA POK ⚡<br>Haz clic para comenzar</div>
+</div>
+
+<script>
+    (function(){
+        const BALL_RESTITUTION = 0.96, GRAVITY_Y = 0.46, BALL_FRICTION = 0.015, BALL_DENSITY = 0.0013;
+        
+        // Splash y logo
+        const splashScreen = document.getElementById('splashScreen');
+        const splashLogo = document.getElementById('splashLogo');
+        const gameLogoImg = document.getElementById('gameLogo');
+        const gameLogoText = document.getElementById('gameLogoText');
+        const splashText = document.getElementById('splashText');
+        const logoPath = 'images/logo_pokapok.png';
+        const logoImg = new Image();
+        logoImg.onload = () => { splashLogo.src = logoPath; gameLogoImg.src = logoPath; gameLogoImg.style.display = 'block'; gameLogoText.style.display = 'none'; };
+        logoImg.onerror = () => { splashLogo.style.display = 'none'; splashText.innerHTML = '⚡ POK TA POK ⚡<br>Haz clic para comenzar'; gameLogoImg.style.display = 'none'; gameLogoText.style.display = 'block'; };
+        logoImg.src = logoPath;
+        
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Configuración responsive del canvas - mantener relación de aspecto
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            const ww = window.innerWidth;
+            const wh = window.innerHeight;
+            
+            // Mantener el canvas con un tamaño fijo en píxeles para la lógica del juego
+            canvas.width = 1200;
+            canvas.height = 650;
+            
+            // Ajustar el tamaño visual para que quepa en la pantalla manteniendo la relación
+            const aspect = 1200 / 650;
+            let displayWidth = ww;
+            let displayHeight = displayWidth / aspect;
+            
+            if (displayHeight > wh) {
+                displayHeight = wh;
+                displayWidth = displayHeight * aspect;
+            }
+            
+            canvas.style.width = `${displayWidth}px`;
+            canvas.style.height = `${displayHeight}px`;
+            container.style.width = `${displayWidth}px`;
+            container.style.height = `${displayHeight}px`;
+        }
+        
+        window.addEventListener('resize', resizeCanvas);
+        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
+        resizeCanvas();
+        
+        const Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Body = Matter.Body, Events = Matter.Events;
+        let engine = Engine.create();
+        engine.gravity.x = 0; engine.gravity.y = GRAVITY_Y;
+        engine.positionIterations = 15; engine.velocityIterations = 12;
+        let world = engine.world;
+        
+        const GROUND_Y = 560, LEFT_BOUND = 70, RIGHT_BOUND = 1130, RING_X = 600, RING_TOP_Y = 210, RING_BOTTOM_Y = 270, CORNER_HEIGHT = 75;
+        let ball, playerBody, opponentBody, ground, leftWall, rightWall, topWall, leftCorner, rightCorner, ringSensor;
+        let goalCooldown = false, playerScore = 0, opponentScore = 0, gameActive = false, victoryFlag = false;
+        let victoryOverlay = null;
+        let panelsPause = false;
+        
+        let stuckCounter = 0, lastBallPos = { x: 600, y: 400 };
+        function resetBallToNeutral() { Body.setPosition(ball, { x: 600, y: 400 }); Body.setVelocity(ball, { x: 0, y: 0 }); lastTouchBy = null; ballTrail = []; stuckCounter = 0; }
+        function checkBallStuck() {
+            if (!gameActive || victoryFlag) return;
+            const currentPos = ball.position, speed = Math.abs(currentPos.x - lastBallPos.x) + Math.abs(currentPos.y - lastBallPos.y);
+            if (speed < 0.5) stuckCounter++; else stuckCounter = 0;
+            if (stuckCounter > 60) { showSacredMessage("🌀 ¡Pasen la bola! 🌀", "#ffaa66"); resetBallToNeutral(); addCameraShake(8, 10); }
+            lastBallPos = { x: currentPos.x, y: currentPos.y };
+        }
+        
+        let cameraShake = 0, shakeIntensity = 0, lastTouchBy = null, ballTrail = [];
+        function addCameraShake(intensity, duration) { shakeIntensity = intensity; cameraShake = duration; }
+        function registerBallTouch(toucher) { if (toucher === "player" || toucher === "opponent") lastTouchBy = toucher; }
+        
+        let customBgImage = null, customBallImage = null, customGroundImage = null, customRingImage = null;
+        function loadDefaultAssets() { customBgImage = customBallImage = customGroundImage = customRingImage = null; showSacredMessage("🎨 Estilo Maya Clásico", "#ffd966"); }
+        
+        const keys = { ArrowLeft: false, ArrowRight: false, KeyA: false, KeyD: false, ArrowUp: false, Space: false, KeyK: false };
+        let touchLeft = false, touchRight = false, touchJump = false, touchKick = false, gamepadConnected = false, gamepadIndex = null;
+        function getInput() {
+            let left = keys.ArrowLeft || keys.KeyA, right = keys.ArrowRight || keys.KeyD, jump = keys.ArrowUp || keys.Space;
+            if (touchLeft) left = true; if (touchRight) right = true; if (touchJump) jump = true;
+            if (gamepadConnected && gamepadIndex !== null) { const gp = navigator.getGamepads()[gamepadIndex]; if (gp) { if (gp.axes[0] < -0.4) left = true; if (gp.axes[0] > 0.4) right = true; if (gp.buttons[0]?.pressed) jump = true; } }
+            return { left, right, jump };
+        }
+        
+        function checkBallOutOfBounds() {
+            if (!gameActive || victoryFlag) return;
+            const pos = ball.position;
+            if (pos.x < LEFT_BOUND - 40 || pos.x > RIGHT_BOUND + 40 || pos.y > GROUND_Y + 80 || pos.y < -50) {
+                showSacredMessage("🌽 ¡Pasen la bola! 🌽", "#ffaa66");
+                resetBallToNeutral(); addCameraShake(6, 8);
+            }
+        }
+        
+        function kickBall() {
+            if (!gameActive || victoryFlag) return;
+            const dx = Math.abs(playerBody.position.x - ball.position.x), dy = Math.abs(playerBody.position.y - ball.position.y);
+            if (dx < 85 && dy < 75) {
+                let direction = (ball.position.x - playerBody.position.x) > 0 ? 1 : -1;
+                Body.applyForce(ball, ball.position, { x: direction * 0.024, y: -0.042 });
+                showSacredMessage("⚡ ¡PATEASTE LA PELOTA!", "#ffaa66");
+                addCameraShake(7, 9); registerBallTouch("player");
+            } else showSacredMessage("❌ Acércate al balón para patear", "#cc8866");
+        }
+        
+        function buildCourt() {
+            if (ball) World.remove(world, ball); if (playerBody) World.remove(world, playerBody); if (opponentBody) World.remove(world, opponentBody);
+            if (ground) World.remove(world, ground); if (leftWall) World.remove(world, leftWall); if (rightWall) World.remove(world, rightWall);
+            if (topWall) World.remove(world, topWall); if (leftCorner) World.remove(world, leftCorner); if (rightCorner) World.remove(world, rightCorner);
+            if (ringSensor) World.remove(world, ringSensor);
+            
+            ground = Bodies.rectangle(600, GROUND_Y + 12, 1200, 24, { isStatic: true, restitution: 0.72, friction: 0.1, label: "ground" });
+            leftWall = Bodies.rectangle(LEFT_BOUND - 10, 360, 20, 600, { isStatic: true, restitution: 0.85, friction: 0.02, label: "wallLeft" });
+            rightWall = Bodies.rectangle(RIGHT_BOUND + 10, 360, 20, 600, { isStatic: true, restitution: 0.85, friction: 0.02, label: "wallRight" });
+            topWall = Bodies.rectangle(600, 20, 1200, 20, { isStatic: true, restitution: 0.8, friction: 0.01, label: "topWall" });
+            
+            const leftCornerVertices = [ { x: LEFT_BOUND - 5, y: GROUND_Y + 5 }, { x: LEFT_BOUND - 5, y: GROUND_Y - CORNER_HEIGHT + 8 }, { x: LEFT_BOUND + CORNER_HEIGHT - 2, y: GROUND_Y - 5 }, { x: LEFT_BOUND + CORNER_HEIGHT - 2, y: GROUND_Y + 5 } ];
+            leftCorner = Bodies.fromVertices(LEFT_BOUND + CORNER_HEIGHT/2 - 2, GROUND_Y - CORNER_HEIGHT/2, [leftCornerVertices], { isStatic: true, restitution: 0.78, friction: 0.08, label: "leftCorner" });
+            const rightCornerVertices = [ { x: RIGHT_BOUND + 5, y: GROUND_Y + 5 }, { x: RIGHT_BOUND + 5, y: GROUND_Y - CORNER_HEIGHT + 8 }, { x: RIGHT_BOUND - CORNER_HEIGHT + 2, y: GROUND_Y - 5 }, { x: RIGHT_BOUND - CORNER_HEIGHT + 2, y: GROUND_Y + 5 } ];
+            rightCorner = Bodies.fromVertices(RIGHT_BOUND - CORNER_HEIGHT/2 + 2, GROUND_Y - CORNER_HEIGHT/2, [rightCornerVertices], { isStatic: true, restitution: 0.78, friction: 0.08, label: "rightCorner" });
+            
+            ball = Bodies.circle(600, 400, 16, { restitution: BALL_RESTITUTION, friction: BALL_FRICTION, density: BALL_DENSITY, label: "ball" });
+            const playerProps = { restitution: 0.55, friction: 0.45, density: 0.014, label: "player", fixedRotation: true, inertia: Infinity };
+            const opponentProps = { restitution: 0.55, friction: 0.45, density: 0.014, label: "opponent", fixedRotation: true, inertia: Infinity };
+            playerBody = Bodies.rectangle(220, GROUND_Y - 40, 34, 52, playerProps);
+            opponentBody = Bodies.rectangle(980, GROUND_Y - 40, 34, 52, opponentProps);
+            ringSensor = Bodies.rectangle(RING_X, (RING_TOP_Y + RING_BOTTOM_Y)/2, 15, 60, { isStatic: true, isSensor: true, label: "ringSensor" });
+            
+            World.add(world, [ground, leftWall, rightWall, topWall, leftCorner, rightCorner, ball, playerBody, opponentBody, ringSensor]);
+            Body.setStatic(playerBody, false); Body.setStatic(opponentBody, false);
+        }
+        
+        function onGoal(scorer) {
+            if (goalCooldown || victoryFlag) return;
+            goalCooldown = true;
+            if (scorer === "player") { playerScore++; showSacredMessage("¡JOM! ¡ANOTAS! +1", "#ffd966"); }
+            else { opponentScore++; showSacredMessage("✨ Xibalbá anota ✨", "#e6b422"); }
+            updateScoreUI(); addCameraShake(15, 22);
+            if (playerScore >= 5 && !victoryFlag) showVictory(true);
+            else if (opponentScore >= 5 && !victoryFlag) showVictory(false);
+            else { Body.setPosition(ball, { x: 600, y: 400 }); Body.setVelocity(ball, { x: 0, y: 0 }); Body.setPosition(playerBody, { x: 220, y: GROUND_Y - 42 }); Body.setVelocity(playerBody, { x: 0, y: 0 }); Body.setPosition(opponentBody, { x: 980, y: GROUND_Y - 42 }); Body.setVelocity(opponentBody, { x: 0, y: 0 }); ballTrail = []; lastTouchBy = null; stuckCounter = 0; }
+            setTimeout(() => { goalCooldown = false; }, 1300);
+        }
+        
+        function showSacredMessage(msg, color) {
+            const div = document.createElement('div');
+            div.innerText = msg;
+            div.style.position = 'absolute'; div.style.bottom = '35%'; div.style.left = '50%'; div.style.transform = 'translateX(-50%)';
+            div.style.backgroundColor = 'rgba(0,0,0,0.85)'; div.style.color = color; div.style.padding = '5px 16px'; div.style.borderRadius = '40px';
+            div.style.fontWeight = 'bold'; div.style.fontFamily = 'monospace'; div.style.zIndex = '30'; div.style.pointerEvents = 'none';
+            div.style.backdropFilter = 'blur(6px)'; div.style.border = `1px solid ${color}`; div.style.fontSize = '11px'; div.style.whiteSpace = 'nowrap';
+            document.querySelector('.game-container').appendChild(div);
+            setTimeout(() => div.remove(), 1200);
+        }
+        
+        function updateScoreUI() { document.getElementById('infoPanel').innerHTML = `🏆 POK TA POK · ${playerScore} - ${opponentScore}`; }
+        
+        function showVictory(playerWin) {
+            if (victoryFlag) return;
+            victoryFlag = true; gameActive = false;
+            const container = document.querySelector('.game-container');
+            victoryOverlay = document.createElement('div');
+            victoryOverlay.className = 'victory-overlay';
+            const msg = document.createElement('div');
+            msg.className = 'victory-message';
+            msg.innerText = playerWin ? '✨ ¡VICTORIA MAYA! ✨' : '🌑 DERROTA... XIBALBÁ GANA';
+            const btnContainer = document.createElement('div');
+            btnContainer.className = 'victory-buttons';
+            const playAgain = document.createElement('button');
+            playAgain.className = 'victory-btn';
+            playAgain.innerText = '🔄 JUGAR DE NUEVO';
+            playAgain.onclick = () => { resetMatch(); victoryOverlay.remove(); victoryFlag = false; gameActive = true; };
+            const goHome = document.createElement('button');
+            goHome.className = 'victory-btn';
+            goHome.innerText = '🏠 VOLVER AL INICIO';
+            goHome.onclick = () => { resetMatch(); victoryOverlay.remove(); victoryFlag = false; gameActive = false; splashScreen.style.display = 'flex'; splashScreen.style.opacity = '1'; };
+            btnContainer.appendChild(playAgain);
+            btnContainer.appendChild(goHome);
+            victoryOverlay.appendChild(msg);
+            victoryOverlay.appendChild(btnContainer);
+            container.appendChild(victoryOverlay);
+        }
+        
+        // ==================== IA JUSTA ====================
+        let aiCooldown = 0;
+        function updateAI() {
+            if (!gameActive || victoryFlag || panelsPause) return;
+            if (aiCooldown > 0) aiCooldown--;
+            const ballPos = ball.position, oppPos = opponentBody.position;
+            let targetX = ballPos.x;
+            if (Math.abs(ballPos.x - RING_X) < 100 && ballPos.y < 350) targetX = RING_X + (ballPos.x > RING_X ? -40 : 40);
+            let move = 0;
+            if (targetX > oppPos.x + 18) move = 0.7;
+            else if (targetX < oppPos.x - 18) move = -0.7;
+            Body.setVelocity(opponentBody, { x: move * 4.0, y: opponentBody.velocity.y });
+            
+            const dx = Math.abs(ballPos.x - oppPos.x), dy = ballPos.y - oppPos.y;
+            const isGrounded = oppPos.y >= GROUND_Y - 45;
+            const ballHeight = ballPos.y;
+            const shouldJump = (isGrounded && dx < 55 && dy < -10 && ballHeight < GROUND_Y - 55 && ballHeight > GROUND_Y - 120);
+            if (shouldJump && Math.random() < 0.25) Body.setVelocity(opponentBody, { x: opponentBody.velocity.x, y: -8.0 });
+            
+            const canHit = (dx < 48 && Math.abs(dy) < 45 && isGrounded && aiCooldown === 0);
+            if (canHit) {
+                let dir = (ballPos.x - oppPos.x) > 0 ? 0.0035 : -0.0035;
+                Body.applyForce(ball, ball.position, { x: dir, y: -0.0032 });
+                registerBallTouch("opponent");
+                addCameraShake(3, 4);
+                aiCooldown = 15;
+            }
+            if (oppPos.x < LEFT_BOUND + 35) Body.setVelocity(opponentBody, { x: 2.5, y: opponentBody.velocity.y });
+            if (oppPos.x > RIGHT_BOUND - 35) Body.setVelocity(opponentBody, { x: -2.5, y: opponentBody.velocity.y });
+        }
+        
+        function updatePlayer() {
+            if (!gameActive || victoryFlag || panelsPause) return;
+            const input = getInput();
+            let move = 0;
+            if (input.left) move = -1;
+            if (input.right) move = 1;
+            Body.setVelocity(playerBody, { x: move * 5.2, y: playerBody.velocity.y });
+            const isGrounded = playerBody.position.y >= GROUND_Y - 45;
+            if (input.jump && isGrounded) Body.setVelocity(playerBody, { x: playerBody.velocity.x, y: -8.4 });
+            if (playerBody.position.x < LEFT_BOUND + 28) Body.setPosition(playerBody, { x: LEFT_BOUND + 28, y: playerBody.position.y });
+            if (playerBody.position.x > RIGHT_BOUND - 28) Body.setPosition(playerBody, { x: RIGHT_BOUND - 28, y: playerBody.position.y });
+            
+            const dxToBall = Math.abs(playerBody.position.x - ball.position.x);
+            const dyToBall = Math.abs(playerBody.position.y - ball.position.y);
+            if (dxToBall < 50 && dyToBall < 55 && input.jump && isGrounded) {
+                let dir = (ball.position.x - playerBody.position.x) > 0 ? 5.0 : -5.0;
+                Body.applyForce(ball, ball.position, { x: dir * 0.0035, y: -0.0045 });
+                addCameraShake(5, 7);
+                registerBallTouch("player");
+            }
+            if (touchKick || keys.KeyK) { kickBall(); if (keys.KeyK) keys.KeyK = false; touchKick = false; }
+        }
+        
+        function handleCollisions() {
+            Events.on(engine, 'collisionStart', function(e) {
+                for (let pair of e.pairs) {
+                    const labelA = pair.bodyA.label, labelB = pair.bodyB.label;
+                    if ((labelA === "ball" && labelB === "player") || (labelB === "ball" && labelA === "player")) { registerBallTouch("player"); addCameraShake(3, 4); }
+                    if ((labelA === "ball" && labelB === "opponent") || (labelB === "ball" && labelA === "opponent")) { registerBallTouch("opponent"); addCameraShake(3, 4); }
+                    if ((labelA === "ball" && labelB === "ringSensor") || (labelB === "ball" && labelA === "ringSensor")) {
+                        if (!goalCooldown && gameActive && !victoryFlag) {
+                            let scorer = "opponent";
+                            if (lastTouchBy === "player") scorer = "player";
+                            else if (lastTouchBy === "opponent") scorer = "opponent";
+                            else if (ball.velocity.x > 0.5) scorer = "player";
+                            else if (ball.velocity.x < -0.5) scorer = "opponent";
+                            onGoal(scorer);
+                        }
+                    }
+                }
+            });
+        }
+        
+        // ==================== SPRITES ====================
+        const playerSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-03.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
+        const opponentSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-02.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
+        const playerImg = new Image(); let playerImgLoaded = false; playerImg.onload = () => playerImgLoaded = true; playerImg.src = playerSpriteConfig.spriteSheetURL;
+        const opponentImg = new Image(); let opponentImgLoaded = false; opponentImg.onload = () => opponentImgLoaded = true; opponentImg.src = opponentSpriteConfig.spriteSheetURL;
+        
+        class SpriteAnimator {
+            constructor(config, img, loadedFlag) { this.config = config; this.img = img; this.isLoaded = loadedFlag; this.currentAnim = 'idle'; this.frameIndex = 0; this.accumulator = 0; }
+            setAnimation(animName) { if (this.currentAnim === animName) return; if (this.config.animations[animName]) { this.currentAnim = animName; this.frameIndex = 0; this.accumulator = 0; } }
+            update(deltaTime) { const anim = this.config.animations[this.currentAnim]; if (!anim) return; this.accumulator += deltaTime; if (this.accumulator >= anim.speed) { this.accumulator = 0; this.frameIndex++; if (this.frameIndex >= anim.frames) { if (anim.loop) this.frameIndex = 0; else this.frameIndex = anim.frames - 1; } } }
+            draw(ctx, x, y, flipX = false) {
+                const anim = this.config.animations[this.currentAnim]; if (!anim) return;
+                const frameW = this.config.frameWidth, frameH = this.config.frameHeight;
+                const col = this.frameIndex, row = anim.row;
+                const sx = col * frameW, sy = row * frameH;
+                const drawX = x - this.config.offsetX, drawY = y - this.config.offsetY;
+                if (this.isLoaded() && this.img.complete && this.img.naturalWidth > 0) {
+                    ctx.save(); if (flipX) { ctx.translate(x + (frameW - this.config.offsetX), y - this.config.offsetY); ctx.scale(-1, 1); ctx.drawImage(this.img, sx, sy, frameW, frameH, 0, 0, frameW, frameH); } else ctx.drawImage(this.img, sx, sy, frameW, frameH, drawX, drawY, frameW, frameH); ctx.restore();
+                } else { ctx.fillStyle = "#aa8866"; ctx.fillRect(x-15, y+6, 30, 36); }
+            }
+        }
+        class AnimatedEntity {
+            constructor(bodyRef, animator, label) { this.body = bodyRef; this.animator = animator; this.facingRight = true; this.label = label; }
+            update(deltaTime) { const vx = this.body.velocity.x; const isGrounded = this.body.position.y >= GROUND_Y - 42; if (!isGrounded) this.animator.setAnimation('jump'); else if (Math.abs(vx) > 1.2) this.animator.setAnimation('run'); else this.animator.setAnimation('idle'); this.animator.update(deltaTime); if (vx !== 0) this.facingRight = vx > 0; }
+            draw(ctx, cameraX) { const drawX = this.body.position.x - cameraX; const drawY = this.body.position.y; this.animator.draw(ctx, drawX, drawY, !this.facingRight); ctx.fillStyle = "#f5d98c"; ctx.font = "bold 9px monospace"; ctx.fillText(this.label, drawX-18, drawY-38); }
+        }
+        
+        function drawMayaCourt(cameraX) {
+            if (customBgImage) ctx.drawImage(customBgImage, 0, 0, canvas.width, canvas.height);
+            else { const grad = ctx.createLinearGradient(0,0,0,canvas.height); grad.addColorStop(0, '#1f3a1a'); grad.addColorStop(1, '#2e4a22'); ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height); }
+            if (customGroundImage) { const pattern = ctx.createPattern(customGroundImage, 'repeat'); ctx.fillStyle = pattern; ctx.fillRect(0, GROUND_Y-8, canvas.width, canvas.height - GROUND_Y + 8); ctx.fillStyle = pattern; ctx.beginPath(); ctx.moveTo(LEFT_BOUND - cameraX, GROUND_Y); ctx.lineTo(LEFT_BOUND - cameraX, GROUND_Y - CORNER_HEIGHT); ctx.lineTo(LEFT_BOUND + CORNER_HEIGHT - cameraX, GROUND_Y); ctx.fill(); ctx.beginPath(); ctx.moveTo(RIGHT_BOUND - cameraX, GROUND_Y); ctx.lineTo(RIGHT_BOUND - cameraX, GROUND_Y - CORNER_HEIGHT); ctx.lineTo(RIGHT_BOUND - CORNER_HEIGHT - cameraX, GROUND_Y); ctx.fill(); }
+            else { ctx.fillStyle = "#c49a6c"; ctx.fillRect(0, GROUND_Y-6, canvas.width, 24); ctx.fillStyle = "#a57c4a"; for(let i=0;i<18;i++) ctx.fillRect((i*120 + cameraX*0.5)%canvas.width, GROUND_Y-4, 70, 6); ctx.fillStyle = "#b88a5a"; ctx.beginPath(); ctx.moveTo(LEFT_BOUND - cameraX, GROUND_Y); ctx.lineTo(LEFT_BOUND - cameraX, GROUND_Y - CORNER_HEIGHT); ctx.lineTo(LEFT_BOUND + CORNER_HEIGHT - cameraX, GROUND_Y); ctx.fill(); ctx.beginPath(); ctx.moveTo(RIGHT_BOUND - cameraX, GROUND_Y); ctx.lineTo(RIGHT_BOUND - cameraX, GROUND_Y - CORNER_HEIGHT); ctx.lineTo(RIGHT_BOUND - CORNER_HEIGHT - cameraX, GROUND_Y); ctx.fill(); }
+            const ringScreenX = RING_X - cameraX;
+            if (customRingImage) ctx.drawImage(customRingImage, ringScreenX - 28, RING_TOP_Y - 15, 56, 90);
+            else { ctx.strokeStyle = "#e6b422"; ctx.lineWidth = 5; ctx.beginPath(); ctx.moveTo(ringScreenX, RING_TOP_Y); ctx.lineTo(ringScreenX, RING_BOTTOM_Y); ctx.stroke(); ctx.beginPath(); ctx.arc(ringScreenX, (RING_TOP_Y+RING_BOTTOM_Y)/2, 24, 0, Math.PI*2); ctx.stroke(); ctx.fillStyle = "#ffd966aa"; ctx.beginPath(); ctx.arc(ringScreenX, (RING_TOP_Y+RING_BOTTOM_Y)/2, 18, 0, Math.PI*2); ctx.fill(); }
+            for (let i = 0; i < ballTrail.length; i++) { const t = ballTrail[i]; const alpha = 0.35 * (1 - i / ballTrail.length); const size = 14 * (1 - i * 0.12); let trailColor = "#b87c3a"; if (t.toucher === "player") trailColor = "#66ff66"; if (t.toucher === "opponent") trailColor = "#ff6666"; ctx.globalAlpha = alpha; ctx.beginPath(); ctx.arc(t.x - cameraX, t.y, size, 0, Math.PI*2); ctx.fillStyle = trailColor; ctx.fill(); } ctx.globalAlpha = 1;
+            let ballColor = "#4a2e1e", glowColor = "#b87c3a"; if (lastTouchBy === "player") { ballColor = "#44cc44"; glowColor = "#88ff88"; } if (lastTouchBy === "opponent") { ballColor = "#cc4444"; glowColor = "#ff8888"; }
+            ctx.shadowBlur = 12; ctx.shadowColor = glowColor;
+            if (customBallImage) ctx.drawImage(customBallImage, ball.position.x - cameraX - 16, ball.position.y - 16, 32, 32);
+            else { ctx.beginPath(); ctx.arc(ball.position.x - cameraX, ball.position.y, 15, 0, Math.PI*2); ctx.fillStyle = ballColor; ctx.fill(); ctx.fillStyle = "#ffcc88"; ctx.beginPath(); ctx.arc(ball.position.x - cameraX, ball.position.y, 9, 0, Math.PI*2); ctx.fill(); }
+            ctx.shadowBlur = 0;
+            if (lastTouchBy) { ctx.font = "bold 7px monospace"; ctx.fillStyle = lastTouchBy === "player" ? "#88ff88" : "#ff8888"; ctx.fillText(lastTouchBy === "player" ? "⚡ HUN" : "⚡ XIB", ball.position.x - cameraX - 12, ball.position.y - 18); }
+        }
+        
+        let lastTimestamp = 0, cameraX = 0, shakeX = 0, shakeY = 0, playerAnimator, opponentAnimator;
+        
+        function gameLoop(nowMs) {
+            if (!lastTimestamp) lastTimestamp = nowMs;
+            let delta = Math.min(0.033, (nowMs - lastTimestamp) / 1000);
+            if (delta <= 0) { lastTimestamp = nowMs; requestAnimationFrame(gameLoop); return; }
+            lastTimestamp = nowMs;
+            
+            if (gameActive && !victoryFlag && !panelsPause) { Engine.update(engine, 16.6); updatePlayer(); updateAI(); checkBallOutOfBounds(); checkBallStuck(); }
+            
+            ballTrail.unshift({ x: ball.position.x, y: ball.position.y, toucher: lastTouchBy });
+            if (ballTrail.length > 8) ballTrail.pop();
+            if (playerAnimator) playerAnimator.update(delta);
+            if (opponentAnimator) opponentAnimator.update(delta);
+            
+            cameraX = ball.position.x - canvas.width/2;
+            cameraX = Math.max(LEFT_BOUND - 60, Math.min(cameraX, RIGHT_BOUND - canvas.width + 80));
+            if (cameraShake > 0) { shakeX = (Math.random() - 0.5) * shakeIntensity; shakeY = (Math.random() - 0.5) * shakeIntensity; cameraShake--; if (cameraShake === 0) shakeIntensity = 0; } else { shakeX = 0; shakeY = 0; }
+            ctx.save(); ctx.translate(shakeX, shakeY);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawMayaCourt(cameraX);
+            if (playerAnimator) playerAnimator.draw(ctx, cameraX);
+            if (opponentAnimator) opponentAnimator.draw(ctx, cameraX);
+            ctx.font = "7px monospace"; ctx.fillStyle = "#aaa"; ctx.fillText(`Último toque: ${lastTouchBy || "nadie"}`, cameraX + 20, 80);
+            ctx.restore();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function resetMatch() {
+            victoryFlag = false; gameActive = true; playerScore = 0; opponentScore = 0; goalCooldown = false; lastTouchBy = null; ballTrail = []; stuckCounter = 0; aiCooldown = 0; panelsPause = false;
+            updateScoreUI(); buildCourt();
+            Body.setPosition(ball, { x: 600, y: 400 }); Body.setVelocity(ball, { x: 0, y: 0 });
+            Body.setPosition(playerBody, { x: 220, y: GROUND_Y - 42 }); Body.setVelocity(playerBody, { x: 0, y: 0 });
+            Body.setPosition(opponentBody, { x: 980, y: GROUND_Y - 42 }); Body.setVelocity(opponentBody, { x: 0, y: 0 });
+            playerAnimator = new AnimatedEntity(playerBody, new SpriteAnimator(playerSpriteConfig, playerImg, () => playerImgLoaded), "Hunahpú");
+            opponentAnimator = new AnimatedEntity(opponentBody, new SpriteAnimator(opponentSpriteConfig, opponentImg, () => opponentImgLoaded), "Sacerdote");
+        }
+        
+        function setPause(paused) { panelsPause = paused; }
+        
+        document.getElementById('bgBtn').onclick = () => document.getElementById('bgInput').click();
+        document.getElementById('ballBtn').onclick = () => document.getElementById('ballInput').click();
+        document.getElementById('groundBtn').onclick = () => document.getElementById('groundInput').click();
+        document.getElementById('ringBtn').onclick = () => document.getElementById('ringInput').click();
+        document.getElementById('loadDefaultBtn').onclick = () => loadDefaultAssets();
+        document.getElementById('bgInput').onchange = (e) => { const f = e.target.files[0]; if (f) { const img = new Image(); img.onload = () => customBgImage = img; img.src = URL.createObjectURL(f); } };
+        document.getElementById('ballInput').onchange = (e) => { const f = e.target.files[0]; if (f) { const img = new Image(); img.onload = () => customBallImage = img; img.src = URL.createObjectURL(f); } };
+        document.getElementById('groundInput').onchange = (e) => { const f = e.target.files[0]; if (f) { const img = new Image(); img.onload = () => customGroundImage = img; img.src = URL.createObjectURL(f); } };
+        document.getElementById('ringInput').onchange = (e) => { const f = e.target.files[0]; if (f) { const img = new Image(); img.onload = () => customRingImage = img; img.src = URL.createObjectURL(f); } };
+        const defaultRingImg = new Image(); defaultRingImg.onload = () => { customRingImage = defaultRingImg; }; defaultRingImg.src = 'images/aro_pokapok-01.png';
+        
+        const controlsBtn = document.getElementById('controlsBtn'), controlsPanel = document.getElementById('controlsPanel');
+        const infoBtn = document.getElementById('infoBtn'), lorePanel = document.getElementById('lorePanel');
+        const customizePanel = document.getElementById('customizePanel'), toggleCustomizeBtn = document.getElementById('toggleCustomizeBtn');
+        
+        controlsBtn.addEventListener('click', () => { controlsPanel.classList.toggle('hidden'); lorePanel.classList.add('hidden'); setPause(!controlsPanel.classList.contains('hidden')); });
+        infoBtn.addEventListener('click', () => { lorePanel.classList.toggle('hidden'); controlsPanel.classList.add('hidden'); setPause(!lorePanel.classList.contains('hidden')); });
+        toggleCustomizeBtn.addEventListener('click', () => { customizePanel.classList.toggle('hidden'); toggleCustomizeBtn.textContent = customizePanel.classList.contains('hidden') ? '🎨 PERSONALIZAR' : '🎨 OCULTAR'; setPause(!customizePanel.classList.contains('hidden')); });
+        
+        window.addEventListener('keydown', (e) => { if (keys.hasOwnProperty(e.code)) { keys[e.code] = true; e.preventDefault(); } if (e.code === 'KeyK') e.preventDefault(); });
+        window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
+        
+        const tL = document.getElementById('touchLeft'), tR = document.getElementById('touchRight'), tJ = document.getElementById('touchJump'), tK = document.getElementById('touchKick');
+        tL.addEventListener('touchstart', (e) => { e.preventDefault(); touchLeft = true; }); tL.addEventListener('touchend', () => { touchLeft = false; }); tL.addEventListener('mousedown', () => { touchLeft = true; }); tL.addEventListener('mouseup', () => { touchLeft = false; });
+        tR.addEventListener('touchstart', (e) => { e.preventDefault(); touchRight = true; }); tR.addEventListener('touchend', () => { touchRight = false; }); tR.addEventListener('mousedown', () => { touchRight = true; }); tR.addEventListener('mouseup', () => { touchRight = false; });
+        tJ.addEventListener('touchstart', (e) => { e.preventDefault(); touchJump = true; }); tJ.addEventListener('touchend', () => { touchJump = false; }); tJ.addEventListener('mousedown', () => { touchJump = true; }); tJ.addEventListener('mouseup', () => { touchJump = false; });
+        tK.addEventListener('touchstart', (e) => { e.preventDefault(); touchKick = true; }); tK.addEventListener('touchend', () => { touchKick = false; }); tK.addEventListener('mousedown', () => { touchKick = true; }); tK.addEventListener('mouseup', () => { touchKick = false; });
+        
+        document.getElementById('resetBtn').addEventListener('click', () => { resetMatch(); if (victoryOverlay) victoryOverlay.remove(); victoryFlag = false; gameActive = true; });
+        window.addEventListener('gamepadconnected', (e) => { gamepadConnected = true; gamepadIndex = e.gamepad.index; });
+        window.addEventListener('gamepaddisconnected', () => { gamepadConnected = false; gamepadIndex = null; });
+        
+        buildCourt(); handleCollisions(); resetMatch(); gameLoop(0);
+        
+        splashScreen.addEventListener('click', () => {
+            splashScreen.style.opacity = '0';
+            setTimeout(() => { splashScreen.style.display = 'none'; gameActive = true; resetMatch(); }, 500);
+        });
+    })();
+</script>
+</body>
+</html>
