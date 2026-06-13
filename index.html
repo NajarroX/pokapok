@@ -27,14 +27,14 @@
             background-image: radial-gradient(circle at 30% 20%, #1e3a1e, #051005);
         }
 
-        /* Splash Screen */
+        /* Splash Screen - sobre el juego, sin fondo negro */
         .splash-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.85);
+            background: transparent;
             backdrop-filter: blur(15px);
             z-index: 1000;
             display: flex;
@@ -288,6 +288,7 @@
     </div>
 </div>
 
+<!-- Splash Screen sin fondo negro, sobre el juego (transparente con blur) -->
 <div class="splash-screen" id="splashScreen">
     <img class="splash-logo" id="splashLogo" alt="Logo Pok Ta Pok">
     <div class="splash-text" id="splashText">⚡ POK TA POK ⚡<br>Haz clic para comenzar</div>
@@ -319,22 +320,16 @@
             const wh = window.innerHeight;
             const gameAspect = 1200 / 650;
             
-            // Mantener el canvas con un tamaño fijo en píxeles para la lógica del juego
             canvas.width = 1200;
             canvas.height = 650;
             
-            // Calcular el tamaño óptimo para que ocupe toda la pantalla sin recortar
             let displayWidth = ww;
             let displayHeight = wh;
-            
-            // Ajustar para mantener la relación de aspecto
             const containerAspect = ww / wh;
             if (containerAspect > gameAspect) {
-                // Pantalla más ancha que el juego
                 displayHeight = wh;
                 displayWidth = wh * gameAspect;
             } else {
-                // Pantalla más alta que el juego
                 displayWidth = ww;
                 displayHeight = ww / gameAspect;
             }
