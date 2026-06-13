@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>POK TA POK - Juego de Pelota Maya | FullBrowser Completo</title>
+    <title>POK TA POK - Juego de Pelota Maya | Velocidad Total</title>
     <style>
         * {
             margin: 0;
@@ -27,7 +27,6 @@
             background-image: radial-gradient(circle at 30% 20%, #1e3a1e, #051005);
         }
 
-        /* Splash Screen - sobre el juego, sin fondo negro */
         .splash-screen {
             position: fixed;
             top: 0;
@@ -48,7 +47,6 @@
         .splash-text { margin-top: 30px; color: #ffd966; font-family: 'Press Start 2P', monospace; font-size: 16px; text-align: center; letter-spacing: 2px; text-shadow: 0 0 10px #e6b422; background: rgba(0,0,0,0.5); padding: 15px 30px; border-radius: 50px; backdrop-filter: blur(5px); }
         @keyframes pulse { 0% { transform: scale(0.98); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.8; } }
 
-        /* FullBrowser sin recortes */
         .game-wrapper { 
             display: flex; 
             flex-direction: column; 
@@ -191,7 +189,6 @@
         .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
         .customize-panel span { color: #ffd966; margin-right: 5px; font-size: 11px; }
 
-        /* Controles táctiles más transparentes */
         .touch-controls { 
             position: fixed; 
             bottom: 20px; 
@@ -288,7 +285,6 @@
     </div>
 </div>
 
-<!-- Splash Screen sin fondo negro, sobre el juego (transparente con blur) -->
 <div class="splash-screen" id="splashScreen">
     <img class="splash-logo" id="splashLogo" alt="Logo Pok Ta Pok">
     <div class="splash-text" id="splashText">⚡ POK TA POK ⚡<br>Haz clic para comenzar</div>
@@ -296,7 +292,16 @@
 
 <script>
     (function(){
-        const BALL_RESTITUTION = 0.96, GRAVITY_Y = 0.46, BALL_FRICTION = 0.015, BALL_DENSITY = 0.0013;
+        // Velocidades aumentadas para juego rápido y frenético
+        const BALL_RESTITUTION = 0.98;
+        const GRAVITY_Y = 0.48;
+        const BALL_FRICTION = 0.01;
+        const BALL_DENSITY = 0.0011;
+        
+        // Velocidad de movimiento mejorada para todos los dispositivos
+        const PLAYER_SPEED = 6.2;
+        const AI_SPEED = 5.0;
+        const JUMP_POWER = -8.6;
         
         // Splash y logo
         const splashScreen = document.getElementById('splashScreen');
@@ -313,16 +318,13 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // FullBrowser: el canvas ocupa toda la pantalla manteniendo la relación de aspecto
         function resizeCanvas() {
             const container = canvas.parentElement;
             const ww = window.innerWidth;
             const wh = window.innerHeight;
             const gameAspect = 1200 / 650;
-            
             canvas.width = 1200;
             canvas.height = 650;
-            
             let displayWidth = ww;
             let displayHeight = wh;
             const containerAspect = ww / wh;
@@ -333,13 +335,11 @@
                 displayWidth = ww;
                 displayHeight = ww / gameAspect;
             }
-            
             canvas.style.width = `${displayWidth}px`;
             canvas.style.height = `${displayHeight}px`;
             container.style.width = `${displayWidth}px`;
             container.style.height = `${displayHeight}px`;
         }
-        
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
         resizeCanvas();
@@ -396,7 +396,7 @@
             const dx = Math.abs(playerBody.position.x - ball.position.x), dy = Math.abs(playerBody.position.y - ball.position.y);
             if (dx < 85 && dy < 75) {
                 let direction = (ball.position.x - playerBody.position.x) > 0 ? 1 : -1;
-                Body.applyForce(ball, ball.position, { x: direction * 0.024, y: -0.042 });
+                Body.applyForce(ball, ball.position, { x: direction * 0.026, y: -0.048 });
                 showSacredMessage("⚡ ¡PATEASTE LA PELOTA!", "#ffaa66");
                 addCameraShake(7, 9); registerBallTouch("player");
             } else showSacredMessage("❌ Acércate al balón para patear", "#cc8866");
@@ -480,7 +480,7 @@
             container.appendChild(victoryOverlay);
         }
         
-        // ==================== IA JUSTA ====================
+        // ==================== IA JUSTA Y RÁPIDA ====================
         let aiCooldown = 0;
         function updateAI() {
             if (!gameActive || victoryFlag || panelsPause) return;
@@ -489,26 +489,26 @@
             let targetX = ballPos.x;
             if (Math.abs(ballPos.x - RING_X) < 100 && ballPos.y < 350) targetX = RING_X + (ballPos.x > RING_X ? -40 : 40);
             let move = 0;
-            if (targetX > oppPos.x + 18) move = 0.7;
-            else if (targetX < oppPos.x - 18) move = -0.7;
-            Body.setVelocity(opponentBody, { x: move * 4.0, y: opponentBody.velocity.y });
+            if (targetX > oppPos.x + 15) move = 0.9;
+            else if (targetX < oppPos.x - 15) move = -0.9;
+            Body.setVelocity(opponentBody, { x: move * AI_SPEED, y: opponentBody.velocity.y });
             
             const dx = Math.abs(ballPos.x - oppPos.x), dy = ballPos.y - oppPos.y;
             const isGrounded = oppPos.y >= GROUND_Y - 45;
             const ballHeight = ballPos.y;
             const shouldJump = (isGrounded && dx < 55 && dy < -10 && ballHeight < GROUND_Y - 55 && ballHeight > GROUND_Y - 120);
-            if (shouldJump && Math.random() < 0.25) Body.setVelocity(opponentBody, { x: opponentBody.velocity.x, y: -8.0 });
+            if (shouldJump && Math.random() < 0.3) Body.setVelocity(opponentBody, { x: opponentBody.velocity.x, y: -8.5 });
             
             const canHit = (dx < 48 && Math.abs(dy) < 45 && isGrounded && aiCooldown === 0);
             if (canHit) {
-                let dir = (ballPos.x - oppPos.x) > 0 ? 0.0035 : -0.0035;
-                Body.applyForce(ball, ball.position, { x: dir, y: -0.0032 });
+                let dir = (ballPos.x - oppPos.x) > 0 ? 0.004 : -0.004;
+                Body.applyForce(ball, ball.position, { x: dir, y: -0.0038 });
                 registerBallTouch("opponent");
                 addCameraShake(3, 4);
-                aiCooldown = 15;
+                aiCooldown = 12;
             }
-            if (oppPos.x < LEFT_BOUND + 35) Body.setVelocity(opponentBody, { x: 2.5, y: opponentBody.velocity.y });
-            if (oppPos.x > RIGHT_BOUND - 35) Body.setVelocity(opponentBody, { x: -2.5, y: opponentBody.velocity.y });
+            if (oppPos.x < LEFT_BOUND + 35) Body.setVelocity(opponentBody, { x: 3, y: opponentBody.velocity.y });
+            if (oppPos.x > RIGHT_BOUND - 35) Body.setVelocity(opponentBody, { x: -3, y: opponentBody.velocity.y });
         }
         
         function updatePlayer() {
@@ -517,17 +517,17 @@
             let move = 0;
             if (input.left) move = -1;
             if (input.right) move = 1;
-            Body.setVelocity(playerBody, { x: move * 5.2, y: playerBody.velocity.y });
+            Body.setVelocity(playerBody, { x: move * PLAYER_SPEED, y: playerBody.velocity.y });
             const isGrounded = playerBody.position.y >= GROUND_Y - 45;
-            if (input.jump && isGrounded) Body.setVelocity(playerBody, { x: playerBody.velocity.x, y: -8.4 });
+            if (input.jump && isGrounded) Body.setVelocity(playerBody, { x: playerBody.velocity.x, y: JUMP_POWER });
             if (playerBody.position.x < LEFT_BOUND + 28) Body.setPosition(playerBody, { x: LEFT_BOUND + 28, y: playerBody.position.y });
             if (playerBody.position.x > RIGHT_BOUND - 28) Body.setPosition(playerBody, { x: RIGHT_BOUND - 28, y: playerBody.position.y });
             
             const dxToBall = Math.abs(playerBody.position.x - ball.position.x);
             const dyToBall = Math.abs(playerBody.position.y - ball.position.y);
             if (dxToBall < 50 && dyToBall < 55 && input.jump && isGrounded) {
-                let dir = (ball.position.x - playerBody.position.x) > 0 ? 5.0 : -5.0;
-                Body.applyForce(ball, ball.position, { x: dir * 0.0035, y: -0.0045 });
+                let dir = (ball.position.x - playerBody.position.x) > 0 ? 5.5 : -5.5;
+                Body.applyForce(ball, ball.position, { x: dir * 0.0038, y: -0.005 });
                 addCameraShake(5, 7);
                 registerBallTouch("player");
             }
@@ -554,7 +554,7 @@
             });
         }
         
-        // ==================== SPRITES ====================
+        // ==================== SPRITES (simplificado pero completo) ====================
         const playerSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-03.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const opponentSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-02.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const playerImg = new Image(); let playerImgLoaded = false; playerImg.onload = () => playerImgLoaded = true; playerImg.src = playerSpriteConfig.spriteSheetURL;
@@ -605,14 +605,11 @@
             let delta = Math.min(0.033, (nowMs - lastTimestamp) / 1000);
             if (delta <= 0) { lastTimestamp = nowMs; requestAnimationFrame(gameLoop); return; }
             lastTimestamp = nowMs;
-            
             if (gameActive && !victoryFlag && !panelsPause) { Engine.update(engine, 16.6); updatePlayer(); updateAI(); checkBallOutOfBounds(); checkBallStuck(); }
-            
             ballTrail.unshift({ x: ball.position.x, y: ball.position.y, toucher: lastTouchBy });
             if (ballTrail.length > 8) ballTrail.pop();
             if (playerAnimator) playerAnimator.update(delta);
             if (opponentAnimator) opponentAnimator.update(delta);
-            
             cameraX = ball.position.x - canvas.width/2;
             cameraX = Math.max(LEFT_BOUND - 60, Math.min(cameraX, RIGHT_BOUND - canvas.width + 80));
             if (cameraShake > 0) { shakeX = (Math.random() - 0.5) * shakeIntensity; shakeY = (Math.random() - 0.5) * shakeIntensity; cameraShake--; if (cameraShake === 0) shakeIntensity = 0; } else { shakeX = 0; shakeY = 0; }
@@ -652,7 +649,6 @@
         const controlsBtn = document.getElementById('controlsBtn'), controlsPanel = document.getElementById('controlsPanel');
         const infoBtn = document.getElementById('infoBtn'), lorePanel = document.getElementById('lorePanel');
         const customizePanel = document.getElementById('customizePanel'), toggleCustomizeBtn = document.getElementById('toggleCustomizeBtn');
-        
         controlsBtn.addEventListener('click', () => { controlsPanel.classList.toggle('hidden'); lorePanel.classList.add('hidden'); setPause(!controlsPanel.classList.contains('hidden')); });
         infoBtn.addEventListener('click', () => { lorePanel.classList.toggle('hidden'); controlsPanel.classList.add('hidden'); setPause(!lorePanel.classList.contains('hidden')); });
         toggleCustomizeBtn.addEventListener('click', () => { customizePanel.classList.toggle('hidden'); toggleCustomizeBtn.textContent = customizePanel.classList.contains('hidden') ? '🎨 PERSONALIZAR' : '🎨 OCULTAR'; setPause(!customizePanel.classList.contains('hidden')); });
