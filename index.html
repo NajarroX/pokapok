@@ -191,7 +191,8 @@
 
         .touch-controls { 
             position: fixed; 
-            bottom: 20px; 
+            top: 50%;
+            transform: translateY(-50%);
             left: 0; 
             right: 0; 
             display: none; 
@@ -200,7 +201,7 @@
             padding: 12px 25px; 
             z-index: 100; 
             pointer-events: none; 
-            max-width: 500px; 
+            max-width: 100%; 
             margin: 0 auto; 
         }
         .touch-direction { display: flex; gap: 20px; pointer-events: auto; }
@@ -228,7 +229,7 @@
         .touch-btn:active { transform: scale(0.92); background: rgba(0,0,0,0.5); }
         
         @media (max-width: 768px) {
-            .touch-controls { display: flex; bottom: 12px; padding: 8px 18px; }
+            .touch-controls { display: flex; padding: 0 18px; }
             .touch-btn { width: 52px; height: 52px; font-size: 28px; }
             .touch-kick { font-size: 24px; }
             .customize-panel { bottom: 70px; left: 12px; flex-wrap: wrap; max-width: 200px; }
@@ -247,7 +248,7 @@
             .info-panel { font-size: 9px; padding: 3px 8px; }
         }
         @media (min-width: 1024px) { 
-            .touch-controls { max-width: 450px; bottom: 25px; } 
+            .touch-controls { max-width: 100%; } 
             .touch-btn { width: 65px; height: 65px; font-size: 34px; }
             .touch-kick { font-size: 30px; }
         }
