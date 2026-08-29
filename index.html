@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>POK TA POK - Juego de Pelota Maya | Velocidad Total</title>
     <style>
         * {
@@ -25,8 +25,10 @@
             width: 100%;
             height: 100%;
             background-image: radial-gradient(circle at 30% 20%, #4fd64f, #051005);
+            touch-action: none;
         }
 
+        /* ===== SPLASH ===== */
         .splash-screen {
             position: fixed;
             top: 0;
@@ -47,6 +49,7 @@
         .splash-text { margin-top: 30px; color: #ffd966; font-family: 'Press Start 2P', monospace; font-size: 16px; text-align: center; letter-spacing: 2px; text-shadow: 0 0 10px #e6b422; background: rgba(0,0,0,0.5); padding: 15px 30px; border-radius: 50px; backdrop-filter: blur(5px); }
         @keyframes pulse { 0% { transform: scale(0.98); opacity: 0.8; } 50% { transform: scale(1.02); opacity: 1; } 100% { transform: scale(0.98); opacity: 0.8; } }
 
+        /* ===== GAME WRAPPER ===== */
         .game-wrapper { 
             display: flex; 
             flex-direction: column; 
@@ -75,8 +78,10 @@
             height: 100%; 
             object-fit: contain;
             background: #0048ff;
+            touch-action: none;
         }
 
+        /* ===== TOP BAR ===== */
         .top-bar { 
             position: absolute; 
             top: 15px; 
@@ -89,7 +94,6 @@
             z-index: 15; 
             pointer-events: none; 
         }
-        /*.logo-area { background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); border-radius: 50px; padding: 5px 15px; border-left: 3px solid #e6b422; display: flex; align-items: center; gap: 10px; pointer-events: none; }*/
         .logo-img { height: 90px; width: auto; max-width: 120px; object-fit: contain; }
         .logo-text { color: #ffd966; font-weight: bold; font-size: 14px; font-family: 'Press Start 2P', monospace; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
         .info-panel { background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); padding: 6px 16px; border-radius: 40px; color: #ffd966; font-weight: bold; font-size: 13px; font-family: monospace; border-left: 3px solid #e6b422; pointer-events: none; white-space: nowrap; }
@@ -97,6 +101,7 @@
         .top-btn { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid #d4a259; color: #ffeaac; font-weight: bold; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', 'Courier New', monospace; font-size: 12px; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
         .top-btn:hover { background: #7e5a2a; transform: scale(1.02); border-color: #ffd966; color: white; }
 
+        /* ===== PANELES ===== */
         .controls-panel, .lore-panel { 
             position: absolute; 
             top: 70px; 
@@ -122,6 +127,7 @@
         .controls-panel.hidden, .lore-panel.hidden { display: none; }
         .controls-panel span, .lore-panel span { color: #ffaa55; font-weight: bold; }
 
+        /* ===== VICTORY ===== */
         .victory-overlay {
             position: absolute;
             top: 0;
@@ -168,6 +174,7 @@
         .reset-btn { position: absolute; bottom: 15px; right: 15px; background: #5a3e1b; border: none; color: #ffeaac; font-weight: bold; padding: 6px 18px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', monospace; z-index: 15; transition: 0.2s; font-size: 12px; box-shadow: 0 2px 8px black; backdrop-filter: blur(4px); }
         .reset-btn:hover { background: #7e5a2a; transform: scale(1.02); }
 
+        /* ===== CUSTOMIZE ===== */
         .customize-panel { 
             position: absolute; 
             bottom: 15px; 
@@ -189,75 +196,252 @@
         .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
         .customize-panel span { color: #ffd966; margin-right: 5px; font-size: 11px; }
 
+        /* ===== CONTROLES TÁCTILES MEJORADOS ===== */
         .touch-controls { 
             position: fixed; 
-            top: 50%;
-            transform: translateY(-50%);
-            left: 0; 
-            right: 0; 
-            display: none; 
-            justify-content: space-between; 
-            align-items: center; 
-            padding: 12px 25px; 
+            display: none;
             z-index: 100; 
-            pointer-events: none; 
-            max-width: 100%; 
-            margin: 0 auto; 
+            pointer-events: none;
+            touch-action: none;
         }
-        .touch-direction { display: flex; gap: 20px; pointer-events: auto; }
-        .touch-action-group { display: flex; gap: 15px; pointer-events: auto; }
+
+        /* Joystick */
+        .joystick-container {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
+            touch-action: none;
+        }
+        .joystick-base {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.35);
+            backdrop-filter: blur(10px);
+            border: 3px solid rgba(230, 180, 34, 0.4);
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .joystick-thumb {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 40% 35%, #ffd966, #c49a2b);
+            border: 2px solid rgba(255, 215, 0, 0.6);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.2);
+            touch-action: none;
+            pointer-events: none;
+        }
+        .joystick-thumb.active {
+            background: radial-gradient(circle at 40% 35%, #ffea8c, #dba53f);
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.4);
+        }
+
+        /* Botones de acción */
+        .action-buttons {
+            display: flex;
+            gap: 20px;
+            pointer-events: auto;
+        }
         .touch-btn { 
-            width: 65px; 
-            height: 65px; 
+            width: 70px; 
+            height: 70px; 
             border-radius: 50%; 
-            background: rgba(0,0,0,0.25); 
+            background: rgba(0,0,0,0.3); 
             backdrop-filter: blur(8px); 
             border: 2px solid rgba(230, 180, 34, 0.5); 
             display: flex; 
             align-items: center; 
             justify-content: center; 
-            font-size: 34px; 
+            font-size: 32px; 
             font-weight: bold; 
             color: #ffdd99; 
             cursor: pointer; 
             transition: 0.05s linear; 
             touch-action: manipulation; 
             font-family: monospace; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            user-select: none;
+            -webkit-user-select: none;
         }
-        .touch-kick { background: rgba(180,70,20,0.25); border-color: rgba(255,136,68,0.5); color: #ffffaa; font-size: 30px; }
-        .touch-btn:active { transform: scale(0.92); background: rgba(0,0,0,0.5); }
-        
-        @media (max-width: 768px) {
-            .touch-controls { display: flex; padding: 0 18px; }
-            .touch-btn { width: 52px; height: 52px; font-size: 28px; }
+        .touch-kick { 
+            background: rgba(180,70,20,0.35); 
+            border-color: rgba(255,136,68,0.6); 
+            color: #ffffaa; 
+            font-size: 28px; 
+        }
+        .touch-jump {
+            background: rgba(20,100,180,0.35);
+            border-color: rgba(68,180,255,0.6);
+            color: #aaddff;
+        }
+        .touch-btn:active { 
+            transform: scale(0.88); 
+            background: rgba(255,255,255,0.15); 
+        }
+
+        /* ===== LAYOUT RESPONSIVE ===== */
+
+        /* MODO VERTICAL (predeterminado) */
+        @media (orientation: portrait) {
+            .touch-controls {
+                display: flex;
+                bottom: 20px;
+                left: 0;
+                right: 0;
+                justify-content: space-around;
+                align-items: center;
+                padding: 0 20px;
+                height: 140px;
+                background: linear-gradient(to top, rgba(0,0,0,0.6), transparent);
+                pointer-events: none;
+            }
+            .joystick-container {
+                width: 100px;
+                height: 100px;
+            }
+            .joystick-base {
+                width: 100px;
+                height: 100px;
+            }
+            .joystick-thumb {
+                width: 45px;
+                height: 45px;
+            }
+            .touch-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 26px;
+            }
             .touch-kick { font-size: 24px; }
-            .customize-panel { bottom: 70px; left: 12px; flex-wrap: wrap; max-width: 200px; }
-            .info-panel { font-size: 11px; padding: 4px 12px; }
-            .controls-panel, .lore-panel { top: 70px; font-size: 10px; width: 90%; }
+            .action-buttons {
+                gap: 15px;
+            }
+            /* Ajuste del canvas para que no se solape con controles */
+            .game-container {
+                height: calc(100% - 140px);
+            }
+        }
+
+        /* MODO HORIZONTAL - Controles a los lados */
+        @media (orientation: landscape) and (max-height: 500px) {
+            .touch-controls {
+                display: flex;
+                top: 50%;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 15px;
+                height: auto;
+                background: transparent;
+                pointer-events: none;
+            }
+            .joystick-container {
+                width: 90px;
+                height: 90px;
+            }
+            .joystick-base {
+                width: 90px;
+                height: 90px;
+            }
+            .joystick-thumb {
+                width: 40px;
+                height: 40px;
+            }
+            .action-buttons {
+                flex-direction: row;
+                gap: 12px;
+            }
+            .touch-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 22px;
+            }
+            .touch-kick { font-size: 20px; }
+            .game-container {
+                height: 100%;
+            }
+        }
+
+        @media (orientation: landscape) and (min-height: 501px) {
+            .touch-controls {
+                display: flex;
+                top: 50%;
+                left: 0;
+                right: 0;
+                transform: translateY(-50%);
+                justify-content: space-between;
+                align-items: center;
+                padding: 0 30px;
+                height: auto;
+                background: transparent;
+                pointer-events: none;
+            }
+            .joystick-container {
+                width: 120px;
+                height: 120px;
+            }
+            .joystick-base {
+                width: 120px;
+                height: 120px;
+            }
+            .joystick-thumb {
+                width: 55px;
+                height: 55px;
+            }
+            .action-buttons {
+                flex-direction: row;
+                gap: 20px;
+            }
+            .touch-btn {
+                width: 70px;
+                height: 70px;
+                font-size: 32px;
+            }
+            .touch-kick { font-size: 28px; }
+            .game-container {
+                height: 100%;
+            }
+        }
+
+        /* ===== FULLSCREEN ===== */
+        .game-container.fullscreen {
+            width: 100vw !important;
+            height: 100vh !important;
+            border-radius: 0 !important;
+        }
+
+        /* ===== RESPONSIVE GENERAL ===== */
+        @media (max-width: 768px) {
             .logo-img { height: 35px; }
             .logo-text { font-size: 10px; }
             .top-btn { padding: 4px 12px; font-size: 10px; }
+            .info-panel { font-size: 11px; padding: 4px 12px; }
+            .controls-panel, .lore-panel { top: 70px; font-size: 10px; width: 90%; }
             .victory-message { font-size: 1rem; padding: 10px 20px; }
             .victory-btn { font-size: 12px; padding: 7px 16px; }
         }
         @media (max-width: 480px) {
-            .touch-btn { width: 48px; height: 48px; font-size: 24px; }
-            .touch-kick { font-size: 20px; }
             .top-btn { padding: 3px 10px; font-size: 9px; }
             .info-panel { font-size: 9px; padding: 3px 8px; }
-        }
-        @media (min-width: 1024px) { 
-            .touch-controls { max-width: 100%; } 
-            .touch-btn { width: 65px; height: 65px; font-size: 34px; }
-            .touch-kick { font-size: 30px; }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
 </head>
 <body>
 <div class="game-wrapper" id="gameWrapper">
-    <div class="game-container">
+    <div class="game-container" id="gameContainer">
         <canvas id="gameCanvas"></canvas>
         <div class="top-bar">
             <div class="logo-area"><img id="gameLogo" class="logo-img" alt="Logo" style="display: none;"><span class="logo-text" id="gameLogoText">POK TA POK</span></div>
@@ -268,7 +452,7 @@
                 <button class="top-btn" id="toggleCustomizeBtn">🎨 PERSONALIZAR</button>
             </div>
         </div>
-        <div class="controls-panel hidden" id="controlsPanel">🎮 <span>TECLADO</span>: ← → mover | ⬆ saltar | <span>K</span> patear<br>🕹️ <span>GAMEPAD</span>: stick izquierdo mover | Botón A saltar | Botón X patear<br>📱 <span>TÁCTIL</span>: botones en pantalla (◀ ▶ ▲ ⚡)</div>
+        <div class="controls-panel hidden" id="controlsPanel">🎮 <span>TECLADO</span>: ← → mover | ⬆ saltar | <span>K</span> patear<br>🕹️ <span>GAMEPAD</span>: stick izquierdo mover | Botón A saltar | Botón X patear<br>📱 <span>TÁCTIL</span>: Joystick y botones</div>
         <div class="lore-panel hidden" id="lorePanel">📖 *POPOL VUH*: Los Héroes Gemelos Hunahpú e Ixbalanqué jugaron a la pelota contra los Señores de Xibalbá.<br>⚡ El juego decidía el destino de los dioses. ¡Haz pasar la pelota de hule por el aro de piedra!<br>🏆 Primero en anotar 5 gana.</div>
         <button class="reset-btn" id="resetBtn">🔄 REINICIAR</button>
     </div>
@@ -280,9 +464,20 @@
         <input type="file" id="groundInput" accept="image/*" style="display:none"><button id="groundBtn">🌱 Suelo</button>
         <input type="file" id="ringInput" accept="image/*" style="display:none"><button id="ringBtn">🔄 Aro</button>
     </div>
+
+    <!-- ===== NUEVOS CONTROLES TÁCTILES ===== -->
     <div class="touch-controls" id="touchControls">
-        <div class="touch-direction"><div class="touch-btn touch-left" id="touchLeft">◀</div><div class="touch-btn touch-right" id="touchRight">▶</div></div>
-        <div class="touch-action-group"><div class="touch-btn touch-jump" id="touchJump">▲</div><div class="touch-btn touch-kick" id="touchKick">⚡</div></div>
+        <!-- Joystick -->
+        <div class="joystick-container" id="joystickContainer">
+            <div class="joystick-base" id="joystickBase">
+                <div class="joystick-thumb" id="joystickThumb"></div>
+            </div>
+        </div>
+        <!-- Botones de acción -->
+        <div class="action-buttons">
+            <div class="touch-btn touch-jump" id="touchJump">▲</div>
+            <div class="touch-btn touch-kick" id="touchKick">⚡</div>
+        </div>
     </div>
 </div>
 
@@ -293,18 +488,16 @@
 
 <script>
     (function(){
-        // Velocidades aumentadas para juego rápido y frenético
+        // ==================== CONFIGURACIÓN ====================
         const BALL_RESTITUTION = 0.98;
         const GRAVITY_Y = 0.48;
         const BALL_FRICTION = 0.01;
         const BALL_DENSITY = 0.0011;
-        
-        // Velocidad de movimiento mejorada para todos los dispositivos
-        const PLAYER_SPEED = 9;
-        const AI_SPEED = 8.5;
+        const PLAYER_SPEED = 6.2;
+        const AI_SPEED = 5.0;
         const JUMP_POWER = -8.6;
         
-        // Splash y logo
+        // ==================== SPLASH Y LOGO ====================
         const splashScreen = document.getElementById('splashScreen');
         const splashLogo = document.getElementById('splashLogo');
         const gameLogoImg = document.getElementById('gameLogo');
@@ -316,8 +509,10 @@
         logoImg.onerror = () => { splashLogo.style.display = 'none'; splashText.innerHTML = '⚡ POK TA POK ⚡<br>Haz clic para comenzar'; gameLogoImg.style.display = 'none'; gameLogoText.style.display = 'block'; };
         logoImg.src = logoPath;
         
+        // ==================== CANVAS ====================
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
+        const gameContainer = document.getElementById('gameContainer');
         
         function resizeCanvas() {
             const container = canvas.parentElement;
@@ -326,25 +521,83 @@
             const gameAspect = 1200 / 650;
             canvas.width = 1200;
             canvas.height = 650;
-            let displayWidth = ww;
-            let displayHeight = wh;
+            
+            // Detectar si es vertical u horizontal
+            const isPortrait = window.innerHeight > window.innerWidth;
+            
+            let displayWidth, displayHeight;
             const containerAspect = ww / wh;
-            if (containerAspect > gameAspect) {
-                displayHeight = wh;
-                displayWidth = wh * gameAspect;
-            } else {
+            
+            // En vertical, el canvas ocupa más espacio horizontal
+            if (isPortrait) {
+                // El canvas ocupa todo el ancho y se ajusta
                 displayWidth = ww;
                 displayHeight = ww / gameAspect;
+                // Asegurar que no sobrepase el alto disponible (restando controles)
+                const maxHeight = wh - 140; // Espacio para controles
+                if (displayHeight > maxHeight) {
+                    displayHeight = maxHeight;
+                    displayWidth = maxHeight * gameAspect;
+                }
+            } else {
+                // Horizontal - ocupa todo
+                if (containerAspect > gameAspect) {
+                    displayHeight = wh;
+                    displayWidth = wh * gameAspect;
+                } else {
+                    displayWidth = ww;
+                    displayHeight = ww / gameAspect;
+                }
             }
+            
             canvas.style.width = `${displayWidth}px`;
             canvas.style.height = `${displayHeight}px`;
             container.style.width = `${displayWidth}px`;
             container.style.height = `${displayHeight}px`;
         }
+        
         window.addEventListener('resize', resizeCanvas);
-        window.addEventListener('orientationchange', () => setTimeout(resizeCanvas, 50));
+        window.addEventListener('orientationchange', () => {
+            setTimeout(resizeCanvas, 100);
+            // Solicitar fullscreen en horizontal
+            if (window.innerWidth > window.innerHeight) {
+                requestFullscreen();
+            } else {
+                exitFullscreen();
+            }
+        });
         resizeCanvas();
         
+        // ==================== FULLSCREEN ====================
+        function requestFullscreen() {
+            const el = document.documentElement;
+            if (el.requestFullscreen) {
+                el.requestFullscreen().catch(() => {});
+            } else if (el.webkitRequestFullscreen) {
+                el.webkitRequestFullscreen();
+            } else if (el.msRequestFullscreen) {
+                el.msRequestFullscreen();
+            }
+        }
+        
+        function exitFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen().catch(() => {});
+            } else if (document.webkitFullscreenElement) {
+                document.webkitExitFullscreen();
+            } else if (document.msFullscreenElement) {
+                document.msExitFullscreen();
+            }
+        }
+        
+        // Detectar cambios de fullscreen
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && window.innerWidth < window.innerHeight) {
+                // Salir de fullscreen si está vertical
+            }
+        });
+        
+        // ==================== MOTOR FÍSICO ====================
         const Engine = Matter.Engine, World = Matter.World, Bodies = Matter.Bodies, Body = Matter.Body, Events = Matter.Events;
         let engine = Engine.create();
         engine.gravity.x = 0; engine.gravity.y = GRAVITY_Y;
@@ -371,52 +624,138 @@
         function addCameraShake(intensity, duration) { shakeIntensity = intensity; cameraShake = duration; }
         function registerBallTouch(toucher) { if (toucher === "player" || toucher === "opponent") lastTouchBy = toucher; }
         
-       let customBgImage = null, customBallImage = null, customGroundImage = null, customRingImage = null;
-
-// Cargar imágenes predeterminadas
-const defaultBgImage = new Image();
-const defaultGroundImage = new Image();
-
-// Cambia estos nombres por los de tus archivos
-defaultBgImage.src = 'images/fondo_maya.jpg';
-defaultGroundImage.src = 'images/suelo_maya.jpg';
-
-defaultBgImage.onload = () => {
-    customBgImage = defaultBgImage;
-    console.log('✅ Fondo Maya cargado');
-};
-
-defaultGroundImage.onload = () => {
-    customGroundImage = defaultGroundImage;
-    console.log('✅ Suelo Maya cargado');
-};
-
-// Si las imágenes no cargan, usa colores alternativos
-defaultBgImage.onerror = () => {
-    console.log('⚠️ No se pudo cargar fondo_maya.jpg, usando color sólido');
-};
-defaultGroundImage.onerror = () => {
-    console.log('⚠️ No se pudo cargar suelo_maya.jpg, usando color sólido');
-};
-
-function loadDefaultAssets() { 
-    // Restablecer a las imágenes predeterminadas
-    customBgImage = defaultBgImage.complete && defaultBgImage.naturalWidth > 0 ? defaultBgImage : null;
-    customGroundImage = defaultGroundImage.complete && defaultGroundImage.naturalWidth > 0 ? defaultGroundImage : null;
-    customBallImage = null;
-    customRingImage = null;
-    showSacredMessage("🎨 Estilo Maya Clásico", "#ffd966"); 
-}
+        // ==================== IMÁGENES PERSONALIZADAS ====================
+        let customBgImage = null, customBallImage = null, customGroundImage = null, customRingImage = null;
+        const defaultBgImage = new Image();
+        const defaultGroundImage = new Image();
+        defaultBgImage.src = 'images/fondo_maya.jpg';
+        defaultGroundImage.src = 'images/suelo_maya.jpg';
+        defaultBgImage.onload = () => { customBgImage = defaultBgImage; console.log('✅ Fondo Maya cargado'); };
+        defaultGroundImage.onload = () => { customGroundImage = defaultGroundImage; console.log('✅ Suelo Maya cargado'); };
+        defaultBgImage.onerror = () => { console.log('⚠️ No se pudo cargar fondo_maya.jpg'); };
+        defaultGroundImage.onerror = () => { console.log('⚠️ No se pudo cargar suelo_maya.jpg'); };
+        function loadDefaultAssets() { 
+            customBgImage = defaultBgImage.complete && defaultBgImage.naturalWidth > 0 ? defaultBgImage : null;
+            customGroundImage = defaultGroundImage.complete && defaultGroundImage.naturalWidth > 0 ? defaultGroundImage : null;
+            customBallImage = null;
+            customRingImage = null;
+            showSacredMessage("🎨 Estilo Maya Clásico", "#ffd966"); 
+        }
         
+        // ==================== CONTROLES ====================
         const keys = { ArrowLeft: false, ArrowRight: false, KeyA: false, KeyD: false, ArrowUp: false, Space: false, KeyK: false };
-        let touchLeft = false, touchRight = false, touchJump = false, touchKick = false, gamepadConnected = false, gamepadIndex = null;
+        let joystickX = 0, touchJump = false, touchKick = false, gamepadConnected = false, gamepadIndex = null;
+        
         function getInput() {
-            let left = keys.ArrowLeft || keys.KeyA, right = keys.ArrowRight || keys.KeyD, jump = keys.ArrowUp || keys.Space;
-            if (touchLeft) left = true; if (touchRight) right = true; if (touchJump) jump = true;
-            if (gamepadConnected && gamepadIndex !== null) { const gp = navigator.getGamepads()[gamepadIndex]; if (gp) { if (gp.axes[0] < -0.4) left = true; if (gp.axes[0] > 0.4) right = true; if (gp.buttons[0]?.pressed) jump = true; } }
+            let left = keys.ArrowLeft || keys.KeyA || joystickX < -0.3;
+            let right = keys.ArrowRight || keys.KeyD || joystickX > 0.3;
+            let jump = keys.ArrowUp || keys.Space || touchJump;
+            if (gamepadConnected && gamepadIndex !== null) {
+                const gp = navigator.getGamepads()[gamepadIndex];
+                if (gp) {
+                    if (gp.axes[0] < -0.4) left = true;
+                    if (gp.axes[0] > 0.4) right = true;
+                    if (gp.buttons[0]?.pressed) jump = true;
+                }
+            }
             return { left, right, jump };
         }
         
+        // ==================== JOYSTICK ====================
+        const joystickContainer = document.getElementById('joystickContainer');
+        const joystickThumb = document.getElementById('joystickThumb');
+        let joystickActive = false;
+        let joystickTouchId = null;
+        
+        function getJoystickPosition(clientX, clientY) {
+            const rect = joystickContainer.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const maxDist = rect.width / 2 - 25;
+            
+            let dx = clientX - centerX;
+            let dy = clientY - centerY;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist > maxDist) {
+                dx = (dx / dist) * maxDist;
+                dy = (dy / dist) * maxDist;
+            }
+            
+            return { dx, dy, maxDist, centerX, centerY };
+        }
+        
+        function updateJoystick(clientX, clientY) {
+            const pos = getJoystickPosition(clientX, clientY);
+            joystickThumb.style.transform = `translate(${-50 + (pos.dx / pos.maxDist) * 50}%, ${-50 + (pos.dy / pos.maxDist) * 50}%)`;
+            joystickThumb.classList.add('active');
+            joystickX = pos.dx / pos.maxDist;
+        }
+        
+        function resetJoystick() {
+            joystickThumb.style.transform = 'translate(-50%, -50%)';
+            joystickThumb.classList.remove('active');
+            joystickX = 0;
+            joystickActive = false;
+            joystickTouchId = null;
+        }
+        
+        // Eventos táctiles del joystick
+        joystickContainer.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.changedTouches[0];
+            joystickTouchId = touch.identifier;
+            joystickActive = true;
+            updateJoystick(touch.clientX, touch.clientY);
+        });
+        
+        joystickContainer.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            if (!joystickActive) return;
+            let touch = null;
+            for (let t of e.changedTouches) {
+                if (t.identifier === joystickTouchId) {
+                    touch = t;
+                    break;
+                }
+            }
+            if (touch) {
+                updateJoystick(touch.clientX, touch.clientY);
+            }
+        });
+        
+        joystickContainer.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            resetJoystick();
+        });
+        
+        joystickContainer.addEventListener('touchcancel', (e) => {
+            e.preventDefault();
+            resetJoystick();
+        });
+        
+        // Eventos mouse para joystick (para debugging en PC)
+        let mouseJoystick = false;
+        joystickContainer.addEventListener('mousedown', (e) => {
+            mouseJoystick = true;
+            joystickActive = true;
+            updateJoystick(e.clientX, e.clientY);
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (mouseJoystick && joystickActive) {
+                updateJoystick(e.clientX, e.clientY);
+            }
+        });
+        
+        document.addEventListener('mouseup', () => {
+            if (mouseJoystick) {
+                mouseJoystick = false;
+                resetJoystick();
+            }
+        });
+        
+        // ==================== FUNCIONES DEL JUEGO ====================
         function checkBallOutOfBounds() {
             if (!gameActive || victoryFlag) return;
             const pos = ball.position;
@@ -437,6 +776,7 @@ function loadDefaultAssets() {
             } else showSacredMessage("❌ Acércate al balón para patear", "#cc8866");
         }
         
+        // ==================== CONSTRUCCIÓN DEL CAMPO ====================
         function buildCourt() {
             if (ball) World.remove(world, ball); if (playerBody) World.remove(world, playerBody); if (opponentBody) World.remove(world, opponentBody);
             if (ground) World.remove(world, ground); if (leftWall) World.remove(world, leftWall); if (rightWall) World.remove(world, rightWall);
@@ -464,6 +804,7 @@ function loadDefaultAssets() {
             Body.setStatic(playerBody, false); Body.setStatic(opponentBody, false);
         }
         
+        // ==================== GOLES Y VICTORIA ====================
         function onGoal(scorer) {
             if (goalCooldown || victoryFlag) return;
             goalCooldown = true;
@@ -515,7 +856,7 @@ function loadDefaultAssets() {
             container.appendChild(victoryOverlay);
         }
         
-        // ==================== IA JUSTA Y RÁPIDA ====================
+        // ==================== IA ====================
         let aiCooldown = 0;
         function updateAI() {
             if (!gameActive || victoryFlag || panelsPause) return;
@@ -546,6 +887,7 @@ function loadDefaultAssets() {
             if (oppPos.x > RIGHT_BOUND - 35) Body.setVelocity(opponentBody, { x: -3, y: opponentBody.velocity.y });
         }
         
+        // ==================== JUGADOR ====================
         function updatePlayer() {
             if (!gameActive || victoryFlag || panelsPause) return;
             const input = getInput();
@@ -569,6 +911,7 @@ function loadDefaultAssets() {
             if (touchKick || keys.KeyK) { kickBall(); if (keys.KeyK) keys.KeyK = false; touchKick = false; }
         }
         
+        // ==================== COLISIONES ====================
         function handleCollisions() {
             Events.on(engine, 'collisionStart', function(e) {
                 for (let pair of e.pairs) {
@@ -589,7 +932,7 @@ function loadDefaultAssets() {
             });
         }
         
-        // ==================== SPRITES (simplificado pero completo) ====================
+        // ==================== SPRITES ====================
         const playerSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-04.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const opponentSpriteConfig = { spriteSheetURL: 'images/spritesheet-template-05.png', frameWidth: 100, frameHeight: 100, animations: { idle: { row: 0, frames: 4, loop: true, speed: 0.15 }, run: { row: 1, frames: 4, loop: true, speed: 0.12 }, jump: { row: 2, frames: 2, loop: false, speed: 0.1 } }, offsetX: 34, offsetY: 59 };
         const playerImg = new Image(); let playerImgLoaded = false; playerImg.onload = () => playerImgLoaded = true; playerImg.src = playerSpriteConfig.spriteSheetURL;
@@ -616,6 +959,7 @@ function loadDefaultAssets() {
             draw(ctx, cameraX) { const drawX = this.body.position.x - cameraX; const drawY = this.body.position.y; this.animator.draw(ctx, drawX, drawY, !this.facingRight); ctx.fillStyle = "#f5d98c"; ctx.font = "bold 10px monospace"; ctx.fillText(this.label, drawX-18, drawY-38); }
         }
         
+        // ==================== DIBUJADO ====================
         function drawMayaCourt(cameraX) {
             if (customBgImage) ctx.drawImage(customBgImage, 0, 0, canvas.width, canvas.height);
             else { const grad = ctx.createLinearGradient(0,0,0,canvas.height); grad.addColorStop(0, '#034389'); grad.addColorStop(1, '#0073a0'); ctx.fillStyle = grad; ctx.fillRect(0,0,canvas.width,canvas.height); }
@@ -633,6 +977,7 @@ function loadDefaultAssets() {
             if (lastTouchBy) { ctx.font = "bold 8px monospace"; ctx.fillStyle = lastTouchBy === "player" ? "#88ff88" : "#ff8888"; ctx.fillText(lastTouchBy === "player" ? "⚡ HUN" : "⚡ XIB", ball.position.x - cameraX - 12, ball.position.y - 18); }
         }
         
+        // ==================== GAME LOOP ====================
         let lastTimestamp = 0, cameraX = 0, shakeX = 0, shakeY = 0, playerAnimator, opponentAnimator;
         
         function gameLoop(nowMs) {
@@ -658,6 +1003,7 @@ function loadDefaultAssets() {
             requestAnimationFrame(gameLoop);
         }
         
+        // ==================== RESET ====================
         function resetMatch() {
             victoryFlag = false; gameActive = true; playerScore = 0; opponentScore = 0; goalCooldown = false; lastTouchBy = null; ballTrail = []; stuckCounter = 0; aiCooldown = 0; panelsPause = false;
             updateScoreUI(); buildCourt();
@@ -670,6 +1016,7 @@ function loadDefaultAssets() {
         
         function setPause(paused) { panelsPause = paused; }
         
+        // ==================== EVENT LISTENERS ====================
         document.getElementById('bgBtn').onclick = () => document.getElementById('bgInput').click();
         document.getElementById('ballBtn').onclick = () => document.getElementById('ballInput').click();
         document.getElementById('groundBtn').onclick = () => document.getElementById('groundInput').click();
@@ -691,16 +1038,29 @@ function loadDefaultAssets() {
         window.addEventListener('keydown', (e) => { if (keys.hasOwnProperty(e.code)) { keys[e.code] = true; e.preventDefault(); } if (e.code === 'KeyK') e.preventDefault(); });
         window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
         
-        const tL = document.getElementById('touchLeft'), tR = document.getElementById('touchRight'), tJ = document.getElementById('touchJump'), tK = document.getElementById('touchKick');
-        tL.addEventListener('touchstart', (e) => { e.preventDefault(); touchLeft = true; }); tL.addEventListener('touchend', () => { touchLeft = false; }); tL.addEventListener('mousedown', () => { touchLeft = true; }); tL.addEventListener('mouseup', () => { touchLeft = false; });
-        tR.addEventListener('touchstart', (e) => { e.preventDefault(); touchRight = true; }); tR.addEventListener('touchend', () => { touchRight = false; }); tR.addEventListener('mousedown', () => { touchRight = true; }); tR.addEventListener('mouseup', () => { touchRight = false; });
-        tJ.addEventListener('touchstart', (e) => { e.preventDefault(); touchJump = true; }); tJ.addEventListener('touchend', () => { touchJump = false; }); tJ.addEventListener('mousedown', () => { touchJump = true; }); tJ.addEventListener('mouseup', () => { touchJump = false; });
-        tK.addEventListener('touchstart', (e) => { e.preventDefault(); touchKick = true; }); tK.addEventListener('touchend', () => { touchKick = false; }); tK.addEventListener('mousedown', () => { touchKick = true; }); tK.addEventListener('mouseup', () => { touchKick = false; });
+        // Botones táctiles (Jump y Kick)
+        const tJ = document.getElementById('touchJump');
+        const tK = document.getElementById('touchKick');
+        
+        tJ.addEventListener('touchstart', (e) => { e.preventDefault(); touchJump = true; });
+        tJ.addEventListener('touchend', () => { touchJump = false; });
+        tJ.addEventListener('touchcancel', () => { touchJump = false; });
+        tJ.addEventListener('mousedown', () => { touchJump = true; });
+        tJ.addEventListener('mouseup', () => { touchJump = false; });
+        tJ.addEventListener('mouseleave', () => { touchJump = false; });
+        
+        tK.addEventListener('touchstart', (e) => { e.preventDefault(); touchKick = true; });
+        tK.addEventListener('touchend', () => { touchKick = false; });
+        tK.addEventListener('touchcancel', () => { touchKick = false; });
+        tK.addEventListener('mousedown', () => { touchKick = true; });
+        tK.addEventListener('mouseup', () => { touchKick = false; });
+        tK.addEventListener('mouseleave', () => { touchKick = false; });
         
         document.getElementById('resetBtn').addEventListener('click', () => { resetMatch(); if (victoryOverlay) victoryOverlay.remove(); victoryFlag = false; gameActive = true; });
         window.addEventListener('gamepadconnected', (e) => { gamepadConnected = true; gamepadIndex = e.gamepad.index; });
         window.addEventListener('gamepaddisconnected', () => { gamepadConnected = false; gamepadIndex = null; });
         
+        // ==================== INICIO ====================
         buildCourt(); handleCollisions(); resetMatch(); gameLoop(0);
         
         splashScreen.addEventListener('click', () => {
