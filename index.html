@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>POK TA POK - Juego de Pelota Maya | Velocidad Total</title>
+    <title>POK TA POK - Juego de Pelota Maya</title>
     <style>
         * {
             margin: 0;
@@ -196,7 +196,7 @@
         .customize-panel button:hover { background: #6a4a1a; transform: scale(1.02); }
         .customize-panel span { color: #ffd966; margin-right: 5px; font-size: 11px; }
 
-        /* ===== CONTROLES TÁCTILES MEJORADOS ===== */
+        /* ===== CONTROLES TÁCTILES ===== */
         .touch-controls { 
             position: fixed; 
             display: none;
@@ -326,7 +326,6 @@
             .action-buttons {
                 gap: 15px;
             }
-            /* Ajuste del canvas para que no se solape con controles */
             .game-container {
                 height: calc(100% - 140px);
             }
@@ -450,6 +449,7 @@
                 <button class="top-btn" id="controlsBtn">🎮 CONTROLES</button>
                 <button class="top-btn" id="infoBtn">📜 INFO</button>
                 <button class="top-btn" id="toggleCustomizeBtn">🎨 PERSONALIZAR</button>
+                <button class="top-btn" id="fullscreenBtn">⛶ FULL</button>
             </div>
         </div>
         <div class="controls-panel hidden" id="controlsPanel">🎮 <span>TECLADO</span>: ← → mover | ⬆ saltar | <span>K</span> patear<br>🕹️ <span>GAMEPAD</span>: stick izquierdo mover | Botón A saltar | Botón X patear<br>📱 <span>TÁCTIL</span>: Joystick y botones</div>
@@ -465,7 +465,7 @@
         <input type="file" id="ringInput" accept="image/*" style="display:none"><button id="ringBtn">🔄 Aro</button>
     </div>
 
-    <!-- ===== NUEVOS CONTROLES TÁCTILES ===== -->
+    <!-- ===== CONTROLES TÁCTILES ===== -->
     <div class="touch-controls" id="touchControls">
         <!-- Joystick -->
         <div class="joystick-container" id="joystickContainer">
@@ -528,19 +528,15 @@
             let displayWidth, displayHeight;
             const containerAspect = ww / wh;
             
-            // En vertical, el canvas ocupa más espacio horizontal
             if (isPortrait) {
-                // El canvas ocupa todo el ancho y se ajusta
                 displayWidth = ww;
                 displayHeight = ww / gameAspect;
-                // Asegurar que no sobrepase el alto disponible (restando controles)
-                const maxHeight = wh - 140; // Espacio para controles
+                const maxHeight = wh - 140; // espacio para controles
                 if (displayHeight > maxHeight) {
                     displayHeight = maxHeight;
                     displayWidth = maxHeight * gameAspect;
                 }
             } else {
-                // Horizontal - ocupa todo
                 if (containerAspect > gameAspect) {
                     displayHeight = wh;
                     displayWidth = wh * gameAspect;
@@ -559,12 +555,7 @@
         window.addEventListener('resize', resizeCanvas);
         window.addEventListener('orientationchange', () => {
             setTimeout(resizeCanvas, 100);
-            // Solicitar fullscreen en horizontal
-            if (window.innerWidth > window.innerHeight) {
-                requestFullscreen();
-            } else {
-                exitFullscreen();
-            }
+            handleOrientationChange();
         });
         resizeCanvas();
         
@@ -590,10 +581,51 @@
             }
         }
         
-        // Detectar cambios de fullscreen
+        function isFullscreen() {
+            return !!(document.fullscreenElement || document.webkitFullscreenElement || document.msFullscreenElement);
+        }
+        
+        // ==================== ORIENTACIÓN ====================
+        function handleOrientationChange() {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (isPortrait) {
+                // Vertical: salir de fullscreen
+                if (isFullscreen()) {
+                    exitFullscreen();
+                }
+            } else {
+                // Horizontal: entrar a fullscreen
+                if (!isFullscreen()) {
+                    // Intentar fullscreen solo si el usuario ya interactuó (lo haremos con un botón también)
+                    // Pero aquí lo intentamos, algunos navegadores lo permiten en orientationchange
+                    requestFullscreen();
+                }
+            }
+        }
+        
+        // Detectar cambios de fullscreen para mantener consistencia
         document.addEventListener('fullscreenchange', () => {
-            if (!document.fullscreenElement && window.innerWidth < window.innerHeight) {
-                // Salir de fullscreen si está vertical
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (isPortrait && isFullscreen()) {
+                // Si está en vertical y en fullscreen, salir
+                exitFullscreen();
+            }
+        });
+        
+        // También con webkit
+        document.addEventListener('webkitfullscreenchange', () => {
+            const isPortrait = window.innerHeight > window.innerWidth;
+            if (isPortrait && isFullscreen()) {
+                exitFullscreen();
+            }
+        });
+        
+        // Botón manual de fullscreen
+        document.getElementById('fullscreenBtn').addEventListener('click', () => {
+            if (isFullscreen()) {
+                exitFullscreen();
+            } else {
+                requestFullscreen();
             }
         });
         
@@ -656,6 +688,7 @@
                     if (gp.axes[0] < -0.4) left = true;
                     if (gp.axes[0] > 0.4) right = true;
                     if (gp.buttons[0]?.pressed) jump = true;
+                    if (gp.buttons[2]?.pressed) touchKick = true;
                 }
             }
             return { left, right, jump };
@@ -682,12 +715,14 @@
                 dy = (dy / dist) * maxDist;
             }
             
-            return { dx, dy, maxDist, centerX, centerY };
+            return { dx, dy, maxDist };
         }
         
         function updateJoystick(clientX, clientY) {
             const pos = getJoystickPosition(clientX, clientY);
-            joystickThumb.style.transform = `translate(${-50 + (pos.dx / pos.maxDist) * 50}%, ${-50 + (pos.dy / pos.maxDist) * 50}%)`;
+            const percentX = (pos.dx / pos.maxDist) * 50;
+            const percentY = (pos.dy / pos.maxDist) * 50;
+            joystickThumb.style.transform = `translate(calc(-50% + ${percentX}px), calc(-50% + ${percentY}px))`;
             joystickThumb.classList.add('active');
             joystickX = pos.dx / pos.maxDist;
         }
@@ -734,7 +769,7 @@
             resetJoystick();
         });
         
-        // Eventos mouse para joystick (para debugging en PC)
+        // Eventos mouse para joystick (debugging en PC)
         let mouseJoystick = false;
         joystickContainer.addEventListener('mousedown', (e) => {
             mouseJoystick = true;
@@ -1067,6 +1102,11 @@
             splashScreen.style.opacity = '0';
             setTimeout(() => { splashScreen.style.display = 'none'; gameActive = true; resetMatch(); }, 500);
         });
+        
+        // Forzar una comprobación inicial de orientación
+        setTimeout(() => {
+            handleOrientationChange();
+        }, 200);
     })();
 </script>
 </body>
