@@ -81,25 +81,92 @@
             touch-action: none;
         }
 
-        /* ===== TOP BAR ===== */
+        /* ===== TOP BAR - HEADER REDISEÑADO ===== */
         .top-bar { 
             position: absolute; 
-            top: 15px; 
-            left: 15px; 
-            right: 15px; 
+            top: 10px; 
+            left: 10px; 
+            right: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            gap: 10px; 
+            gap: 6px; 
             z-index: 15; 
-            pointer-events: none; 
+            pointer-events: none;
+            flex-wrap: nowrap;
+            min-height: 40px;
         }
-        .logo-img { height: 90px; width: auto; max-width: 120px; object-fit: contain; }
-        .logo-text { color: #ffd966; font-weight: bold; font-size: 14px; font-family: 'Press Start 2P', monospace; letter-spacing: 1px; text-shadow: 1px 1px 0 #000; }
-        .info-panel { background: rgba(0,0,0,0.85); backdrop-filter: blur(6px); padding: 6px 16px; border-radius: 40px; color: #ffd966; font-weight: bold; font-size: 13px; font-family: monospace; border-left: 3px solid #e6b422; pointer-events: none; white-space: nowrap; }
-        .top-actions { display: flex; gap: 12px; pointer-events: auto; flex-wrap: wrap; }
-        .top-btn { background: rgba(0,0,0,0.8); backdrop-filter: blur(8px); border: 1px solid #d4a259; color: #ffeaac; font-weight: bold; padding: 6px 16px; border-radius: 40px; cursor: pointer; font-family: 'Segoe UI', 'Courier New', monospace; font-size: 12px; transition: all 0.2s ease; white-space: nowrap; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-        .top-btn:hover { background: #7e5a2a; transform: scale(1.02); border-color: #ffd966; color: white; }
+        
+        /* Logo */
+        .logo-area {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+            pointer-events: none;
+        }
+        .logo-img { 
+            height: 40px; 
+            width: auto; 
+            max-width: 100px; 
+            object-fit: contain; 
+            display: none;
+        }
+        .logo-text { 
+            color: #ffd966; 
+            font-weight: bold; 
+            font-size: 12px; 
+            font-family: 'Press Start 2P', monospace; 
+            letter-spacing: 1px; 
+            text-shadow: 1px 1px 0 #000;
+            white-space: nowrap;
+        }
+
+        /* Info panel - marcador */
+        .info-panel { 
+            background: rgba(0,0,0,0.85); 
+            backdrop-filter: blur(6px); 
+            padding: 4px 12px; 
+            border-radius: 40px; 
+            color: #ffd966; 
+            font-weight: bold; 
+            font-size: 11px; 
+            font-family: monospace; 
+            border-left: 3px solid #e6b422; 
+            pointer-events: none; 
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+
+        /* Botones de acción */
+        .top-actions { 
+            display: flex; 
+            gap: 5px; 
+            pointer-events: auto;
+            flex-shrink: 0;
+            align-items: center;
+        }
+        .top-btn { 
+            background: rgba(0,0,0,0.8); 
+            backdrop-filter: blur(8px); 
+            border: 1px solid #d4a259; 
+            color: #ffeaac; 
+            font-weight: bold; 
+            padding: 4px 10px; 
+            border-radius: 40px; 
+            cursor: pointer; 
+            font-family: 'Segoe UI', 'Courier New', monospace; 
+            font-size: 10px; 
+            transition: all 0.2s ease; 
+            white-space: nowrap; 
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            line-height: 1.4;
+        }
+        .top-btn:hover { 
+            background: #7e5a2a; 
+            transform: scale(1.02); 
+            border-color: #ffd966; 
+            color: white; 
+        }
         .top-btn.fullscreen-btn {
             background: rgba(255, 215, 0, 0.2);
             border-color: #ffd966;
@@ -107,14 +174,14 @@
             animation: pulse-fullscreen 2s infinite;
         }
         @keyframes pulse-fullscreen {
-            0%, 100% { box-shadow: 0 0 10px rgba(255, 215, 0, 0.2); }
-            50% { box-shadow: 0 0 25px rgba(255, 215, 0, 0.6); }
+            0%, 100% { box-shadow: 0 0 8px rgba(255, 215, 0, 0.2); }
+            50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
         }
 
         /* ===== PANELES ===== */
         .controls-panel, .lore-panel { 
             position: absolute; 
-            top: 70px; 
+            top: 60px; 
             left: 50%; 
             transform: translateX(-50%); 
             background: rgba(0,0,0,0.92); 
@@ -369,6 +436,17 @@
             .fullscreen-float-btn {
                 display: none !important;
             }
+            /* Header vertical */
+            .top-bar {
+                top: 8px;
+                left: 8px;
+                right: 8px;
+                gap: 4px;
+            }
+            .logo-text { font-size: 9px; }
+            .info-panel { font-size: 9px; padding: 3px 8px; }
+            .top-btn { font-size: 8px; padding: 3px 7px; }
+            .top-actions { gap: 3px; }
         }
 
         /* MODO HORIZONTAL - Controles a los lados */
@@ -411,10 +489,20 @@
             .game-container {
                 height: 100%;
             }
-            /* Mostrar botón flotante solo si NO está en fullscreen */
             .fullscreen-float-btn:not(.hidden) {
                 display: block;
             }
+            /* Header horizontal */
+            .top-bar {
+                top: 10px;
+                left: 10px;
+                right: 10px;
+                gap: 8px;
+            }
+            .logo-text { font-size: 12px; }
+            .info-panel { font-size: 11px; padding: 4px 12px; }
+            .top-btn { font-size: 10px; padding: 4px 10px; }
+            .top-actions { gap: 5px; }
         }
 
         @media (orientation: landscape) and (min-height: 501px) {
@@ -443,11 +531,11 @@
 
         /* ===== RESPONSIVE GENERAL ===== */
         @media (max-width: 768px) {
-            .logo-img { height: 35px; }
-            .logo-text { font-size: 10px; }
-            .top-btn { padding: 4px 12px; font-size: 10px; }
-            .info-panel { font-size: 11px; padding: 4px 12px; }
-            .controls-panel, .lore-panel { top: 70px; font-size: 10px; width: 90%; }
+            .logo-text { font-size: 9px; }
+            .info-panel { font-size: 9px; padding: 3px 8px; }
+            .top-btn { font-size: 8px; padding: 3px 7px; }
+            .top-actions { gap: 3px; }
+            .controls-panel, .lore-panel { top: 55px; font-size: 10px; width: 90%; padding: 10px 16px; }
             .victory-message { font-size: 1rem; padding: 10px 20px; }
             .victory-btn { font-size: 12px; padding: 7px 16px; }
             .fullscreen-float-btn {
@@ -457,8 +545,11 @@
             }
         }
         @media (max-width: 480px) {
-            .top-btn { padding: 3px 10px; font-size: 9px; }
-            .info-panel { font-size: 9px; padding: 3px 8px; }
+            .logo-text { font-size: 7px; }
+            .info-panel { font-size: 7px; padding: 2px 6px; border-left-width: 2px; }
+            .top-btn { font-size: 7px; padding: 2px 6px; }
+            .top-actions { gap: 2px; }
+            .top-bar { gap: 3px; top: 5px; left: 5px; right: 5px; }
             .fullscreen-float-btn {
                 font-size: 12px;
                 padding: 8px 18px;
@@ -472,45 +563,48 @@
 <div class="game-wrapper" id="gameWrapper">
     <div class="game-container" id="gameContainer">
         <canvas id="gameCanvas"></canvas>
+        
+        <!-- HEADER REDISEÑADO - UNA SOLA FILA -->
         <div class="top-bar">
-            <div class="logo-area"><img id="gameLogo" class="logo-img" alt="Logo" style="display: none;"><span class="logo-text" id="gameLogoText">POK TA POK</span></div>
-            <div class="info-panel" id="infoPanel">🏆 POK TA POK · 0 - 0</div>
+            <div class="logo-area">
+                <img id="gameLogo" class="logo-img" alt="Logo" style="display: none;">
+                <span class="logo-text" id="gameLogoText">POK TA POK</span>
+            </div>
+            <div class="info-panel" id="infoPanel">🏆 0 - 0</div>
             <div class="top-actions">
-                <button class="top-btn" id="controlsBtn">🎮 CONTROLES</button>
-                <button class="top-btn" id="infoBtn">📜 INFO</button>
-                <button class="top-btn" id="toggleCustomizeBtn">🎨 PERSONALIZAR</button>
-                <button class="top-btn fullscreen-btn" id="fullscreenBtn">⛶ FULL</button>
+                <button class="top-btn" id="controlsBtn">🎮</button>
+                <button class="top-btn" id="infoBtn">📜</button>
+                <button class="top-btn" id="toggleCustomizeBtn">🎨</button>
+                <button class="top-btn fullscreen-btn" id="fullscreenBtn">⛶</button>
             </div>
         </div>
+
         <div class="controls-panel hidden" id="controlsPanel">🎮 <span>TECLADO</span>: ← → mover | ⬆ saltar | <span>K</span> patear<br>🕹️ <span>GAMEPAD</span>: stick izquierdo mover | Botón A saltar | Botón X patear<br>📱 <span>TÁCTIL</span>: Joystick y botones</div>
         <div class="lore-panel hidden" id="lorePanel">📖 *POPOL VUH*: Los Héroes Gemelos Hunahpú e Ixbalanqué jugaron a la pelota contra los Señores de Xibalbá.<br>⚡ El juego decidía el destino de los dioses. ¡Haz pasar la pelota de hule por el aro de piedra!<br>🏆 Primero en anotar 5 gana.</div>
-        <button class="reset-btn" id="resetBtn">🔄 REINICIAR</button>
+        <button class="reset-btn" id="resetBtn">🔄</button>
     </div>
     <div class="customize-panel hidden" id="customizePanel">
         <span>🎨</span>
-        <button id="loadDefaultBtn">📁 Default</button>
-        <input type="file" id="bgInput" accept="image/*" style="display:none"><button id="bgBtn">🏞️ Fondo</button>
-        <input type="file" id="ballInput" accept="image/*" style="display:none"><button id="ballBtn">⚽ Pelota</button>
-        <input type="file" id="groundInput" accept="image/*" style="display:none"><button id="groundBtn">🌱 Suelo</button>
-        <input type="file" id="ringInput" accept="image/*" style="display:none"><button id="ringBtn">🔄 Aro</button>
+        <button id="loadDefaultBtn">📁</button>
+        <input type="file" id="bgInput" accept="image/*" style="display:none"><button id="bgBtn">🏞️</button>
+        <input type="file" id="ballInput" accept="image/*" style="display:none"><button id="ballBtn">⚽</button>
+        <input type="file" id="groundInput" accept="image/*" style="display:none"><button id="groundBtn">🌱</button>
+        <input type="file" id="ringInput" accept="image/*" style="display:none"><button id="ringBtn">🔄</button>
     </div>
 
     <!-- ===== CONTROLES TÁCTILES ===== -->
     <div class="touch-controls" id="touchControls">
-        <!-- Joystick -->
         <div class="joystick-container" id="joystickContainer">
             <div class="joystick-base" id="joystickBase">
                 <div class="joystick-thumb" id="joystickThumb"></div>
             </div>
         </div>
-        <!-- Botones de acción -->
         <div class="action-buttons">
             <div class="touch-btn touch-jump" id="touchJump">▲</div>
             <div class="touch-btn touch-kick" id="touchKick">⚡</div>
         </div>
     </div>
 
-    <!-- ===== BOTÓN FULLSCREEN FLOTANTE (solo móvil horizontal) ===== -->
     <button class="fullscreen-float-btn hidden" id="fullscreenFloatBtn">⛶ PANTALLA COMPLETA</button>
 </div>
 
@@ -626,29 +720,24 @@
             const isPortrait = window.innerHeight > window.innerWidth;
             
             if (isPortrait) {
-                // Vertical: salir de fullscreen y ocultar botón flotante
                 if (isFullscreen()) {
                     exitFullscreen();
                 }
                 fullscreenFloatBtn.classList.add('hidden');
             } else {
-                // Horizontal: mostrar botón flotante en móviles si no está en fullscreen
                 if (isMobile && !isFullscreen()) {
                     fullscreenFloatBtn.classList.remove('hidden');
                 } else if (!isMobile && !isFullscreen()) {
-                    // En PC, el botón de la barra es suficiente
                     fullscreenFloatBtn.classList.add('hidden');
                 }
             }
         }
         
-        // Eventos de fullscreen
         document.addEventListener('fullscreenchange', () => {
             const isPortrait = window.innerHeight > window.innerWidth;
             if (isPortrait && isFullscreen()) {
                 exitFullscreen();
             }
-            // Actualizar botón flotante
             if (isMobile && !isFullscreen() && window.innerWidth > window.innerHeight) {
                 fullscreenFloatBtn.classList.remove('hidden');
             } else {
@@ -669,7 +758,6 @@
         });
         
         // ===== BOTONES FULLSCREEN =====
-        // Botón en la barra superior
         document.getElementById('fullscreenBtn').addEventListener('click', () => {
             if (isFullscreen()) {
                 exitFullscreen();
@@ -678,10 +766,8 @@
             }
         });
         
-        // Botón flotante (para móviles en horizontal)
         fullscreenFloatBtn.addEventListener('click', () => {
             requestFullscreen();
-            // Ocultar inmediatamente después de solicitar
             fullscreenFloatBtn.classList.add('hidden');
         });
         
@@ -791,7 +877,6 @@
             joystickTouchId = null;
         }
         
-        // Eventos táctiles del joystick
         joystickContainer.addEventListener('touchstart', (e) => {
             e.preventDefault();
             const touch = e.changedTouches[0];
@@ -825,7 +910,6 @@
             resetJoystick();
         });
         
-        // Eventos mouse para joystick (debugging en PC)
         let mouseJoystick = false;
         joystickContainer.addEventListener('mousedown', (e) => {
             mouseJoystick = true;
@@ -919,7 +1003,9 @@
             setTimeout(() => div.remove(), 1200);
         }
         
-        function updateScoreUI() { document.getElementById('infoPanel').innerHTML = `🏆 POK TA POK · ${playerScore} - ${opponentScore}`; }
+        function updateScoreUI() { 
+            document.getElementById('infoPanel').innerHTML = `🏆 ${playerScore} - ${opponentScore}`; 
+        }
         
         function showVictory(playerWin) {
             if (victoryFlag) return;
@@ -1124,12 +1210,11 @@
         const customizePanel = document.getElementById('customizePanel'), toggleCustomizeBtn = document.getElementById('toggleCustomizeBtn');
         controlsBtn.addEventListener('click', () => { controlsPanel.classList.toggle('hidden'); lorePanel.classList.add('hidden'); setPause(!controlsPanel.classList.contains('hidden')); });
         infoBtn.addEventListener('click', () => { lorePanel.classList.toggle('hidden'); controlsPanel.classList.add('hidden'); setPause(!lorePanel.classList.contains('hidden')); });
-        toggleCustomizeBtn.addEventListener('click', () => { customizePanel.classList.toggle('hidden'); toggleCustomizeBtn.textContent = customizePanel.classList.contains('hidden') ? '🎨 PERSONALIZAR' : '🎨 OCULTAR'; setPause(!customizePanel.classList.contains('hidden')); });
+        toggleCustomizeBtn.addEventListener('click', () => { customizePanel.classList.toggle('hidden'); toggleCustomizeBtn.textContent = customizePanel.classList.contains('hidden') ? '🎨' : '🎨'; setPause(!customizePanel.classList.contains('hidden')); });
         
         window.addEventListener('keydown', (e) => { if (keys.hasOwnProperty(e.code)) { keys[e.code] = true; e.preventDefault(); } if (e.code === 'KeyK') e.preventDefault(); });
         window.addEventListener('keyup', (e) => { if (keys.hasOwnProperty(e.code)) keys[e.code] = false; });
         
-        // Botones táctiles (Jump y Kick)
         const tJ = document.getElementById('touchJump');
         const tK = document.getElementById('touchKick');
         
@@ -1159,7 +1244,6 @@
             setTimeout(() => { splashScreen.style.display = 'none'; gameActive = true; resetMatch(); }, 500);
         });
         
-        // Forzar comprobación inicial de orientación
         setTimeout(() => {
             handleOrientationChange();
         }, 300);
